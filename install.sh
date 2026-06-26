@@ -34,12 +34,7 @@ check_prereqs() {
     log "Vérification des prérequis..."
 
     if ! command -v docker &> /dev/null; then
-        warn "Docker non installé. Installation..."
-        curl -fsSL https://get.docker.com | sh
-        sudo usermod -aG docker $USER
-        log "Docker installé. Redémarre ta session pour les permissions."
-        echo -e "${YELLOW}Relance ce script après avoir ouvert un nouveau terminal.${NC}"
-        exit 0
+        error "Docker non installé. Installe-le avec : curl -fsSL https://get.docker.com | sh"
     fi
 
     if ! command -v docker compose &> /dev/null && ! docker compose version &> /dev/null; then
@@ -47,8 +42,7 @@ check_prereqs() {
     fi
 
     if ! command -v git &> /dev/null; then
-        warn "Git non installé. Installation..."
-        sudo apt-get update -qq && sudo apt-get install -y -qq git
+        error "Git non installé. Installe-le avec : apt install git"
     fi
 
     log "Prérequis OK ✓"
@@ -97,34 +91,30 @@ docker_build() {
     docker compose exec -T backend php artisan migrate --force 2>/dev/null || true
 }
 
-# Créer le service systemd
+# Créer le service systemd (optionnel, nécessite sudo)
 create_service() {
-    log "Création du service systemd..."
-
-    sudo tee /etc/systemd/system/dispatchmon.service > /dev/null <<EOF
-[Unit]
-Description=DispatchMon Dashboard
-After=docker.service
-Requires=docker.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-WorkingDirectory=$INSTALL_DIR
-ExecStart=/usr/bin/docker compose up -d
-ExecStop=/usr/bin/docker compose down
-ExecReload=/usr/bin/docker compose up -d --build
-TimeoutStartSec=120
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    sudo systemctl daemon-reload
-    sudo systemctl enable dispatchmon.service
-    log "Service dispatchmon créé et activé ✓"
-    log "Démarrage du service..."
-    sudo systemctl start dispatchmon.service
+    warn "Service systemd non créé (pas de sudo)."
+    echo "  Pour démarrer manuellement :"
+    echo "    cd $INSTALL_DIR && docker compose up -d"
+    echo ""
+    echo "  Pour un auto-start au boot, lance avec sudo :"
+    echo "    sudo bash -c 'cat > /etc/systemd/system/dispatchmon.service << EOF"
+    echo "[Unit]"
+    echo "Description=DispatchMon Dashboard"
+    echo "After=docker.service"
+    echo "Requires=docker.service"
+    echo ""
+    echo "[Service]"
+    echo "Type=oneshot"
+    echo "RemainAfterExit=yes"
+    echo "WorkingDirectory=$INSTALL_DIR"
+    echo "ExecStart=/usr/bin/docker compose up -d"
+    echo "ExecStop=/usr/bin/docker compose down"
+    echo "TimeoutStartSec=120"
+    echo ""
+    echo "[Install]"
+    echo "WantedBy=multi-user.target"
+    echo "EOF'"
 }
 
 # Vérifier la config Telegram
