@@ -123,7 +123,7 @@ export default function App() {
         <>
             <div className="header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <h1>📊 <span>Dispatcharr</span> Stats</h1>
+                    <h1>📊 <span>DispatchMon</span></h1>
                     <div className="badge on"><div className="dot" /><span>Connecté</span></div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

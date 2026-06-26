@@ -87,7 +87,7 @@ class TelegramService
 
         // Envoyer le message test
         $sent = $this->send(
-            "🔔 <b>Dispatcharr Platform</b>\n\n" .
+            "🔔 <b>DispatchMon</b>\n\n" .
             "✅ Notification Telegram configurée avec succès !\n\n" .
             "🤖 Bot: @{$botName}\n" .
             "💬 Chat ID: {$this->chatId}\n" .
