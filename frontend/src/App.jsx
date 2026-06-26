@@ -550,6 +550,7 @@ export default function App() {
                             {/* Settings Sub-Tabs */}
                             <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg1)' }}>
                                 {[
+                                    { id: 'general', label: '🔧 Général' },
                                     { id: 'telegram', label: '📱 Telegram' },
                                     { id: 'backups', label: '💾 Sauvegardes' },
                                     { id: 'about', label: 'ℹ️ À propos' },
@@ -563,6 +564,62 @@ export default function App() {
                                     </div>
                                 ))}
                             </div>
+
+                            {/* General Tab */}
+                            {settingsTab === 'general' && (
+                                <div style={{ padding: 20 }}>
+                                    <h3 style={{ fontSize: 15, marginBottom: 16, color: 'var(--t1)' }}>
+                                        🔧 Général
+                                    </h3>
+
+                                    <div style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        borderRadius: 8, padding: 16, marginBottom: 16
+                                    }}>
+                                        <h4 style={{ margin: '0 0 8px 0', fontSize: 13, color: 'var(--t1)' }}>
+                                            🗑️ Vider les statistiques
+                                        </h4>
+                                        <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 12 }}>
+                                            Supprime tous les événements, réinitialise les viewers actifs et les clients actifs.
+                                            Les clients enregistrés (known_clients) ne sont pas supprimés.
+                                        </p>
+                                        <button
+                                            onClick={async () => {
+                                                if (!confirm('Êtes-vous sûr de vouloir vider toutes les statistiques ? Cette action est irréversible.')) return
+                                                try {
+                                                    const res = await fetch(`${API}/stats/all`, { method: 'DELETE' })
+                                                    const data = await res.json()
+                                                    if (data.status === 'ok') {
+                                                        setTelegramTest({ ok: true, msg: '✅ ' + data.message })
+                                                        fetchData()
+                                                    } else {
+                                                        setTelegramTest({ ok: false, msg: '❌ Erreur' })
+                                                    }
+                                                } catch (e) {
+                                                    setTelegramTest({ ok: false, msg: '❌ Erreur de connexion' })
+                                                }
+                                                setTimeout(() => setTelegramTest(null), 3000)
+                                            }}
+                                            style={{
+                                                background: 'rgba(248,81,73,0.15)', color: 'var(--red)', border: 'none',
+                                                padding: '8px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600
+                                            }}
+                                        >
+                                            🗑️ Vider toutes les stats
+                                        </button>
+                                    </div>
+
+                                    {telegramTest && (
+                                        <div style={{
+                                            marginTop: 12, padding: '8px 14px', borderRadius: 6, fontSize: 13,
+                                            background: telegramTest.ok ? 'rgba(63,185,80,0.1)' : 'rgba(248,81,73,0.1)',
+                                            color: telegramTest.ok ? 'var(--green)' : 'var(--red)'
+                                        }}>
+                                            {telegramTest.msg}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Telegram Tab */}
                             {settingsTab === 'telegram' && (

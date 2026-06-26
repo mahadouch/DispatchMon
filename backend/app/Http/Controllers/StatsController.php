@@ -135,4 +135,22 @@ class StatsController extends Controller
         $deleted = DispatcharrEvent::where('created_at', '<', now()->subDays(30))->delete();
         return response()->json(['deleted' => $deleted]);
     }
+
+    /**
+     * DELETE /api/stats/all
+     * Vider toutes les statistiques
+     */
+    public function clearAll(): JsonResponse
+    {
+        $counts = [
+            'events' => DispatcharrEvent::truncate(),
+            'channels' => Channel::query()->update(['current_viewers' => 0, 'is_active' => false]),
+            'active_clients' => ActiveClient::truncate(),
+        ];
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Toutes les statistiques ont été vidées',
+        ]);
+    }
 }

@@ -22,6 +22,7 @@ Route::prefix('stats')->group(function () {
     Route::get('/timeline', [StatsController::class, 'timeline']);
     Route::get('/m3u', [StatsController::class, 'm3u']);
     Route::delete('/events', [StatsController::class, 'purge']);
+    Route::delete('/all', [StatsController::class, 'clearAll']);
 });
 
 // Client management API
