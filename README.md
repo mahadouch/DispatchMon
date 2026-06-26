@@ -60,7 +60,7 @@ Dashboard web temps réel pour **Dispatcharr** — monitorer les chaînes, clien
 ### Installation rapide (recommandée)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mahadouch/DispatchMon/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mahadouch/DispatchMon/master/install.sh | bash
 ```
 
 Le script automatise :

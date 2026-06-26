@@ -3,12 +3,12 @@ set -e
 
 # ============================================
 #  DispatchMon - Script d'installation/mise à jour
-#  curl -fsSL https://raw.githubusercontent.com/mahadouch/DispatchMon/main/install.sh | bash
+#  curl -fsSL https://raw.githubusercontent.com/mahadouch/DispatchMon/master/install.sh | bash
 # ============================================
 
 REPO="mahadouch/DispatchMon"
 INSTALL_DIR="$HOME/DispatchMon"
-BRANCH="main"
+BRANCH="master"
 
 # Couleurs
 RED='\033[0;31m'
