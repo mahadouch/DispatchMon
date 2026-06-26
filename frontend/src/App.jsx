@@ -52,6 +52,8 @@ const EVENT_ICONS = {
     vod_start: '🎬', vod_stop: '⏹️',
 }
 
+const EVENT_TYPES = Object.keys(EVENT_ICONS)
+
 export default function App() {
     const [summary, setSummary] = useState(null)
     const [channels, setChannels] = useState([])
@@ -68,6 +70,7 @@ export default function App() {
     const [topClients, setTopClients] = useState([])
     const [activeTab, setActiveTab] = useState('clients')
     const [search, setSearch] = useState('')
+    const [eventFilter, setEventFilter] = useState({ type: '', dateFrom: '', dateTo: '' })
     const [settings, setSettings] = useState({})
     const [telegramTest, setTelegramTest] = useState(null)
     const [telegramSaving, setTelegramSaving] = useState(false)
@@ -180,14 +183,20 @@ export default function App() {
         ch.group_name?.toLowerCase().includes(search.toLowerCase())
     )
 
-    const filteredEvents = events.filter(ev =>
-        !search ||
-        ev.event_type?.toLowerCase().includes(search.toLowerCase()) ||
-        ev.channel_name?.toLowerCase().includes(search.toLowerCase()) ||
-        ev.client_ip?.toLowerCase().includes(search.toLowerCase()) ||
-        ev.username?.toLowerCase().includes(search.toLowerCase()) ||
-        ev.country?.toLowerCase().includes(search.toLowerCase())
-    )
+    const filteredEvents = events.filter(ev => {
+        if (search) {
+            const s = search.toLowerCase()
+            if (!ev.event_type?.toLowerCase().includes(s) &&
+                !ev.channel_name?.toLowerCase().includes(s) &&
+                !ev.client_ip?.toLowerCase().includes(s) &&
+                !ev.username?.toLowerCase().includes(s) &&
+                !ev.country?.toLowerCase().includes(s)) return false
+        }
+        if (eventFilter.type && ev.event_type !== eventFilter.type) return false
+        if (eventFilter.dateFrom && new Date(ev.created_at) < new Date(eventFilter.dateFrom)) return false
+        if (eventFilter.dateTo && new Date(ev.created_at) > new Date(eventFilter.dateTo + 'T23:59:59')) return false
+        return true
+    })
 
     if (loading) {
         return (
@@ -531,14 +540,47 @@ export default function App() {
                     {/* Events Tab */}
                     {activeTab === 'events' && (
                         <div>
-                            <div style={{ padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <div style={{ padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                                 <input
                                     type="text" placeholder="🔍 Rechercher type, chaîne, client..."
                                     value={search} onChange={e => setSearch(e.target.value)}
                                     style={{
                                         background: 'var(--bg2)', border: '1px solid var(--border)',
                                         color: 'var(--t1)', padding: '6px 12px', borderRadius: 6,
-                                        fontSize: 13, width: 300
+                                        fontSize: 13, width: 200
+                                    }}
+                                />
+                                <select
+                                    value={eventFilter.type}
+                                    onChange={e => setEventFilter(f => ({...f, type: e.target.value}))}
+                                    style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        color: 'var(--t1)', padding: '6px 12px', borderRadius: 6,
+                                        fontSize: 13
+                                    }}
+                                >
+                                    <option value="">Tous les types</option>
+                                    {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                                <input
+                                    type="date"
+                                    value={eventFilter.dateFrom}
+                                    onChange={e => setEventFilter(f => ({...f, dateFrom: e.target.value}))}
+                                    style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        color: 'var(--t1)', padding: '6px 12px', borderRadius: 6,
+                                        fontSize: 13
+                                    }}
+                                />
+                                <span style={{ color: 'var(--t3)', fontSize: 12 }}>→</span>
+                                <input
+                                    type="date"
+                                    value={eventFilter.dateTo}
+                                    onChange={e => setEventFilter(f => ({...f, dateTo: e.target.value}))}
+                                    style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        color: 'var(--t1)', padding: '6px 12px', borderRadius: 6,
+                                        fontSize: 13
                                     }}
                                 />
                                 <span style={{ fontSize: 12, color: 'var(--t3)' }}>
