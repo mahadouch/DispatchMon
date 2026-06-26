@@ -68,6 +68,8 @@ export default function App() {
     const [backups, setBackups] = useState([])
     const [settingsTab, setSettingsTab] = useState('telegram')
     const [version, setVersion] = useState(null)
+    const [updateInfo, setUpdateInfo] = useState(null)
+    const [showUpdateNotif, setShowUpdateNotif] = useState(false)
 
     const fetchData = useCallback(async () => {
         try {
@@ -101,6 +103,18 @@ export default function App() {
         } finally {
             setLoading(false)
         }
+
+        // Check for updates (en arrière-plan, pas bloquant)
+        try {
+            const res = await fetch(`${API}/version/check`)
+            const data = await res.json()
+            if (data.update_available) {
+                setUpdateInfo(data)
+                setShowUpdateNotif(true)
+                // Auto-masquer après 10 secondes
+                setTimeout(() => setShowUpdateNotif(false), 10000)
+            }
+        } catch (e) {}
     }, [])
 
     useEffect(() => {
@@ -139,6 +153,15 @@ export default function App() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <h1>📊 <span>DispatchMon</span></h1>
                     <div className="badge on"><div className="dot" /><span>Connecté</span></div>
+                    {version && (
+                        <span style={{
+                            fontSize: 11, padding: '2px 8px', borderRadius: 10,
+                            background: 'var(--bg2)', border: '1px solid var(--border)',
+                            color: 'var(--t3)'
+                        }}>
+                            v{version.version}
+                        </span>
+                    )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{ fontSize: 12, color: 'var(--t3)' }}>Auto-refresh: 10s</span>
@@ -148,6 +171,53 @@ export default function App() {
                     }}>🔄</button>
                 </div>
             </div>
+
+            {/* Notification mise à jour */}
+            {showUpdateNotif && updateInfo && (
+                <div style={{
+                    background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(147,51,234,0.15))',
+                    border: '1px solid rgba(59,130,246,0.3)',
+                    borderRadius: 8, padding: '12px 20px', margin: '0 16px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ fontSize: 20 }}>🚀</span>
+                        <div>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--blue)' }}>
+                                Nouvelle version disponible !
+                            </span>
+                            <span style={{ fontSize: 12, color: 'var(--t3)', marginLeft: 8 }}>
+                                v{updateInfo.current} → v{updateInfo.latest}
+                            </span>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {updateInfo.url && (
+                            <a
+                                href={updateInfo.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    background: 'var(--blue)', color: '#fff', border: 'none',
+                                    padding: '6px 14px', borderRadius: 6, cursor: 'pointer',
+                                    fontSize: 12, fontWeight: 600, textDecoration: 'none'
+                                }}
+                            >
+                                📥 Voir
+                            </a>
+                        )}
+                        <button
+                            onClick={() => setShowUpdateNotif(false)}
+                            style={{
+                                background: 'transparent', border: 'none',
+                                color: 'var(--t3)', cursor: 'pointer', fontSize: 16, padding: 4
+                            }}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="main">
                 {/* Summary Cards */}

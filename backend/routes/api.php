@@ -51,3 +51,4 @@ Route::prefix('backups')->group(function () {
 
 // Version API
 Route::get('/version', [VersionController::class, 'index']);
+Route::get('/version/check', [VersionController::class, 'check']);
