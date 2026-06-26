@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Models\ActiveClient;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -204,10 +205,8 @@ class TelegramService
         $streamUrl = $data['stream_url'] ?? null;
         $provider = $data['provider_name'] ?? null;
         $profile = $data['profile_used'] ?? null;
-
         $msg = "▶️ <b>Chaîne démarrée</b>\n";
         $msg .= "📺 {$channel}";
-
         if ($streamName) {
             $msg .= "\n🏷️ Stream: {$streamName}";
         }
@@ -220,6 +219,22 @@ class TelegramService
         if ($streamUrl && $streamUrl !== '-') {
             $msg .= "\n🔗 " . substr($streamUrl, 0, 80);
         }
+        // Chercher les clients actifs sur cette chaîne
+        $clients = ActiveClient::where('channel_name', $channel)
+            ->select('username', 'client_ip', 'country', 'country_code')
+            ->get();
+        if ($clients->isNotEmpty()) {
+            $msg .= "\n\n👤 <b>Clients :</b>";
+            foreach ($clients as $cl) {
+                $flag = $cl->country_code ? $this->flagEmoji($cl->country_code) : '🌍';
+                $name = $cl->username ?: $cl->client_ip ?: '—';
+                $country = $cl->country ? " {$flag} {$cl->country}" : '';
+                $msg .= "\n  • {$name}{$country}";
+            }
+        }
+
+        $date = now()->format('d/m/Y H:i');
+        $msg .= "\n🕐 {$date}";
 
         return $msg;
     }
