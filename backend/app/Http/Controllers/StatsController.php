@@ -144,7 +144,7 @@ class StatsController extends Controller
     {
         DispatcharrEvent::truncate();
         ActiveClient::truncate();
-        Channel::query()->update(['current_viewers' => 0, 'is_active' => false, 'last_seen' => null]);
+        Channel::truncate();
         \App\Models\KnownClient::query()->delete();
 
         return response()->json([
