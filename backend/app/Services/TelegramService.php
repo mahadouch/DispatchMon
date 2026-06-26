@@ -161,8 +161,9 @@ class TelegramService
         $client = $username ?: $clientIp ?: '—';
         $flag = $countryCode ? $this->flagEmoji($countryCode) : '🌍';
         $pays = $country ? " {$flag} {$country}" : '';
+        $date = now()->format('d/m/Y H:i');
 
-        return match ($eventType) {
+        $msg = match ($eventType) {
             'client_connect' => "🟢 <b>Nouveau client</b>\n👤 {$client}{$pays}\n📺 {$channel}",
             'client_disconnect' => "🔴 <b>Déconnexion</b>\n👤 {$client}{$pays}\n📺 {$channel}",
             'channel_start' => $this->formatChannelStart($data),
@@ -181,6 +182,16 @@ class TelegramService
             'vod_stop' => "⏹️ <b>VOD terminé</b>\n🎞️ " . ($data['content_name'] ?? '—'),
             default => "📌 <b>{$eventType}</b>\n📺 {$channel}",
         };
+
+        // Ajouter client + date en footer
+        if (!in_array($eventType, ['client_connect', 'client_disconnect', 'login_failed', 'vod_start'])) {
+            if ($client !== '—') {
+                $msg .= "\n👤 {$client}{$pays}";
+            }
+        }
+        $msg .= "\n🕐 {$date}";
+
+        return $msg;
     }
 
     /**
