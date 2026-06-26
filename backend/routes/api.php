@@ -79,6 +79,7 @@ Route::post('/auth/register', [\App\Http\Controllers\AuthController::class, 'reg
 Route::middleware(\App\Http\Middleware\AuthToken::class)->group(function () {
     Route::get('/auth/me', [\App\Http\Controllers\AuthController::class, 'me']);
     Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+    Route::put('/auth/password', [\App\Http\Controllers\AuthController::class, 'changePassword']);
 });
 
 // Protected routes (API Key required)

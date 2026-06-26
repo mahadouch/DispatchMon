@@ -96,4 +96,25 @@ class AuthController extends Controller
         }
         return response()->json(['status' => 'ok']);
     }
+
+    /**
+     * PUT /api/auth/password
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+            return response()->json(['error' => 'Mot de passe actuel incorrect'], 400);
+        }
+
+        $user->update(['password' => $request->password]);
+
+        return response()->json(['status' => 'ok', 'message' => 'Mot de passe modifié']);
+    }
 }

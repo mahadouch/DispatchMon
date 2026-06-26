@@ -809,6 +809,45 @@ export default function App() {
                                         borderRadius: 8, padding: 16, marginBottom: 16
                                     }}>
                                         <h4 style={{ margin: '0 0 8px 0', fontSize: 13, color: 'var(--t1)' }}>
+                                            🔒 Changer le mot de passe
+                                        </h4>
+                                        <div style={{ marginBottom: 10 }}>
+                                            <input type="password" placeholder="Mot de passe actuel" id="current-pwd"
+                                                style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg1)', color: 'var(--t1)', fontSize: 13 }} />
+                                        </div>
+                                        <div style={{ marginBottom: 10 }}>
+                                            <input type="password" placeholder="Nouveau mot de passe" id="new-pwd"
+                                                style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg1)', color: 'var(--t1)', fontSize: 13 }} />
+                                        </div>
+                                        <div style={{ marginBottom: 10 }}>
+                                            <input type="password" placeholder="Confirmer le mot de passe" id="confirm-pwd"
+                                                style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg1)', color: 'var(--t1)', fontSize: 13 }} />
+                                        </div>
+                                        <button
+                                            onClick={async () => {
+                                                const current = document.getElementById('current-pwd').value
+                                                const pwd = document.getElementById('new-pwd').value
+                                                const confirm = document.getElementById('confirm-pwd').value
+                                                if (!current || !pwd) { setTelegramTest({ ok: false, msg: '❌ Remplis tous les champs' }); setTimeout(() => setTelegramTest(null), 3000); return }
+                                                if (pwd !== confirm) { setTelegramTest({ ok: false, msg: '❌ Les mots de passe ne correspondent pas' }); setTimeout(() => setTelegramTest(null), 3000); return }
+                                                try {
+                                                    const token = localStorage.getItem('token')
+                                                    const res = await fetch(`${API}/auth/password`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ current_password: current, password: pwd, password_confirmation: confirm }) })
+                                                    const data = await res.json()
+                                                    if (res.ok) { setTelegramTest({ ok: true, msg: '✅ ' + data.message }); ['current-pwd','new-pwd','confirm-pwd'].forEach(id => document.getElementById(id).value = '') }
+                                                    else { setTelegramTest({ ok: false, msg: '❌ ' + (data.error || 'Erreur') }) }
+                                                } catch (e) { setTelegramTest({ ok: false, msg: '❌ Erreur' }) }
+                                                setTimeout(() => setTelegramTest(null), 3000)
+                                            }}
+                                            style={{ background: 'var(--blue)', color: '#fff', border: 'none', padding: '8px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+                                        >🔒 Changer</button>
+                                    </div>
+
+                                    <div style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        borderRadius: 8, padding: 16, marginBottom: 16
+                                    }}>
+                                        <h4 style={{ margin: '0 0 8px 0', fontSize: 13, color: 'var(--t1)' }}>
                                             ⏰ Backup automatique
                                         </h4>
                                         <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 12 }}>
