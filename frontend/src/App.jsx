@@ -492,8 +492,10 @@ export default function App() {
                                                 <span style={{ marginRight: 6 }}>{EVENT_ICONS[ev.event_type] || '📌'}</span>
                                                 <span style={{ fontWeight: 500 }}>{ev.event_type}</span>
                                             </td>
-                                            <td style={{ color: ev.channel_name ? 'var(--blue)' : 'var(--t3)' }}>
-                                                {ev.channel_name || '—'}
+                                            <td style={{ color: (ev.channel_name || ev.content_name) ? 'var(--blue)' : 'var(--t3)' }}>
+                                                {ev.content_name ? (
+                                                    <span>🎬 {ev.content_name}</span>
+                                                ) : ev.channel_name || '—'}
                                             </td>
                                             <td>
                                                 {ev.username || ev.client_ip ? (
