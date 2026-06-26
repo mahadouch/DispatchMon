@@ -72,6 +72,14 @@ docker_build() {
     log "Construction des images Docker..."
     docker compose build --no-cache
 
+    # Nettoyer les anciens fichiers de DB incorrects
+    if [ -d "$INSTALL_DIR/data/database.sqlite" ]; then
+        warn "Suppression de l'ancien dossier database.sqlite..."
+        rm -rf "$INSTALL_DIR/data/database.sqlite"
+    fi
+    mkdir -p "$INSTALL_DIR/data"
+    touch "$INSTALL_DIR/data/database.sqlite"
+
     log "Démarrage des conteneurs..."
     docker compose up -d
 
