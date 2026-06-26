@@ -131,8 +131,18 @@ class TelegramService
             'client_disconnect' => 'client_disconnect',
             'channel_start' => 'channel_start',
             'channel_stop' => 'channel_stop',
-            'stream_error', 'error' => 'errors',
-            default => 'client_connect', // fallback
+            'channel_error' => 'channel_error',
+            'channel_reconnect' => 'channel_reconnect',
+            'channel_failover' => 'channel_failover',
+            'stream_switch' => 'stream_switch',
+            'm3u_refresh' => 'm3u_refresh',
+            'epg_refresh' => 'epg_refresh',
+            'login_failed' => 'login_failed',
+            'recording_start' => 'recording_start',
+            'recording_end' => 'recording_end',
+            'vod_start' => 'vod_start',
+            'vod_stop' => 'vod_stop',
+            default => $eventType,
         };
     }
 
