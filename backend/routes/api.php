@@ -21,6 +21,10 @@ Route::prefix('stats')->group(function () {
     Route::get('/clients', [StatsController::class, 'clients']);
     Route::get('/timeline', [StatsController::class, 'timeline']);
     Route::get('/m3u', [StatsController::class, 'm3u']);
+    Route::get('/timeline/hourly', [StatsController::class, 'timelineHourly']);
+    Route::get('/timeline/weekly', [StatsController::class, 'timelineWeekly']);
+    Route::get('/top/channels', [StatsController::class, 'topChannels']);
+    Route::get('/top/clients', [StatsController::class, 'topClients']);
     Route::delete('/events', [StatsController::class, 'purge']);
     Route::delete('/all', [StatsController::class, 'clearAll']);
 });

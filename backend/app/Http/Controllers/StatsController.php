@@ -137,6 +137,77 @@ class StatsController extends Controller
     }
 
     /**
+     * GET /api/stats/timeline/hourly
+     * Nombre de viewers par heure sur les dernières 24h
+     */
+    public function timelineHourly(): JsonResponse
+    {
+        $data = [];
+        for ($i = 23; $i >= 0; $i--) {
+            $start = now()->subHours($i)->startOfHour();
+            $end = $start->copy()->endOfHour();
+            $count = ActiveClient::where('connected_at', '>=', $start)
+                ->where('connected_at', '<', $end)
+                ->count();
+            $data[] = [
+                'hour' => $start->format('H:00'),
+                'viewers' => $count,
+            ];
+        }
+        return response()->json($data);
+    }
+
+    /**
+     * GET /api/stats/timeline/weekly
+     * Nombre de connexions par jour sur les 7 derniers jours
+     */
+    public function timelineWeekly(): JsonResponse
+    {
+        $data = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->startOfDay();
+            $count = DispatcharrEvent::where('event_type', 'client_connect')
+                ->where('created_at', '>=', $date)
+                ->where('created_at', '<', $date->copy()->endOfDay())
+                ->count();
+            $data[] = [
+                'date' => $date->format('d/m'),
+                'connections' => $count,
+            ];
+        }
+        return response()->json($data);
+    }
+
+    /**
+     * GET /api/stats/top/channels
+     * Top 10 chaînes par nombre de connexions (7 jours)
+     */
+    public function topChannels(): JsonResponse
+    {
+        $top = DispatcharrEvent::where('event_type', 'client_connect')
+            ->select('channel_name', \DB::raw('count(*) as total'))
+            ->where('created_at', '>=', now()->subDays(7))
+            ->whereNotNull('channel_name')
+            ->groupBy('channel_name')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->get();
+        return response()->json($top);
+    }
+
+    /**
+     * GET /api/stats/top/clients
+     * Top 10 clients par nombre de sessions
+     */
+    public function topClients(): JsonResponse
+    {
+        $top = \App\Models\KnownClient::orderByDesc('total_sessions')
+            ->limit(10)
+            ->get(['client_ip', 'username', 'country', 'country_code', 'total_sessions']);
+        return response()->json($top);
+    }
+
+    /**
      * DELETE /api/stats/all
      * Vider toutes les statistiques
      */
