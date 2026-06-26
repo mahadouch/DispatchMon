@@ -795,6 +795,29 @@ export default function App() {
                                         borderRadius: 8, padding: 16, marginBottom: 16
                                     }}>
                                         <h4 style={{ margin: '0 0 8px 0', fontSize: 13, color: 'var(--t1)' }}>
+                                            ⏰ Backup automatique
+                                        </h4>
+                                        <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 12 }}>
+                                            Sauvegarde automatique quotidienne à 3h00 du matin.
+                                        </p>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={settings.auto_backup === '1'}
+                                                onChange={e => setSettings(s => ({...s, auto_backup: e.target.checked ? '1' : '0'}))}
+                                                style={{ width: 16, height: 16 }}
+                                            />
+                                            <span style={{ fontSize: 13, color: 'var(--t2)' }}>
+                                                Activer le backup automatique
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <div style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        borderRadius: 8, padding: 16, marginBottom: 16
+                                    }}>
+                                        <h4 style={{ margin: '0 0 8px 0', fontSize: 13, color: 'var(--t1)' }}>
                                             🗑️ Vider les statistiques
                                         </h4>
                                         <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 12 }}>
