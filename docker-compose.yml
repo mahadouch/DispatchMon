@@ -13,6 +13,11 @@ services:
       - APP_DEBUG=true
       - DB_CONNECTION=sqlite
       - DB_DATABASE=/var/www/html/database/database.sqlite
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - TELEGRAM_ENABLED=${TELEGRAM_ENABLED:-0}
+    volumes:
+      - ./data/database.sqlite:/var/www/html/database/database.sqlite
     restart: unless-stopped
 
   frontend:

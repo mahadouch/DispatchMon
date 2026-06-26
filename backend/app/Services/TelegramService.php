@@ -13,8 +13,9 @@ class TelegramService
 
     public function __construct()
     {
-        $this->botToken = Setting::get('telegram_bot_token', '');
-        $this->chatId = Setting::get('telegram_chat_id', '');
+        // Priorité: DB settings > env vars
+        $this->botToken = Setting::get('telegram_bot_token', '') ?: env('TELEGRAM_BOT_TOKEN', '');
+        $this->chatId = Setting::get('telegram_chat_id', '') ?: env('TELEGRAM_CHAT_ID', '');
     }
 
     /**
@@ -22,7 +23,8 @@ class TelegramService
      */
     public function isConfigured(): bool
     {
-        return Setting::get('telegram_enabled', '0') === '1'
+        $enabled = Setting::get('telegram_enabled', null) ?? env('TELEGRAM_ENABLED', '0');
+        return $enabled === '1'
             && !empty($this->botToken)
             && !empty($this->chatId);
     }
