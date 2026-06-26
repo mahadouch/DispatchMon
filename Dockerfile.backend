@@ -24,11 +24,12 @@ COPY backend/routes /var/www/html/routes
 COPY backend/config /var/www/html/config
 COPY backend/bootstrap/app.php /var/www/html/bootstrap/app.php
 
-# Create SQLite database
-RUN touch database/database.sqlite && chmod 777 database/database.sqlite
-
 # Storage permissions
 RUN chmod -R 777 storage bootstrap/cache
+
+# Copy entrypoint
+COPY backend/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Set environment
 ENV APP_ENV=local
@@ -38,4 +39,4 @@ ENV DB_DATABASE=/var/www/html/database/database.sqlite
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+ENTRYPOINT ["entrypoint.sh"]
