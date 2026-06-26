@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\ApiToken;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthToken
 {
@@ -25,7 +26,7 @@ class AuthToken
             return response()->json(['error' => 'Token invalide'], 401);
         }
 
-        $request->setUser($apiToken->user);
+        Auth::setUser($apiToken->user);
 
         return $next($request);
     }
