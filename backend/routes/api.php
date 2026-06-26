@@ -5,6 +5,7 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\BackupController;
 
 // Webhook endpoint (no auth needed - Dispatcharr calls this)
 Route::post('/webhook/dispatcharr', [WebhookController::class, 'handle']);
@@ -36,4 +37,13 @@ Route::prefix('settings')->group(function () {
     Route::get('/', [SettingsController::class, 'index']);
     Route::put('/', [SettingsController::class, 'update']);
     Route::post('/telegram/test', [SettingsController::class, 'testTelegram']);
+});
+
+// Backup API
+Route::prefix('backups')->group(function () {
+    Route::get('/', [BackupController::class, 'index']);
+    Route::post('/', [BackupController::class, 'create']);
+    Route::post('/{name}/restore', [BackupController::class, 'restore']);
+    Route::get('/{name}/download', [BackupController::class, 'download']);
+    Route::delete('/{name}', [BackupController::class, 'delete']);
 });
