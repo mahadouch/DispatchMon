@@ -28,17 +28,27 @@ Dashboard web temps réel pour **Dispatcharr** — monitorer les chaînes, clien
 | **👥 Clients** | Liste des clients connus (IP, username, pays, sessions) avec recherche |
 | **🟢 Actifs** | Clients en temps réel connectés aux chaînes |
 | **📺 Chaînes** | État des chaînes (live/off), viewers, liste des clients par chaîne |
-| **📝 Événements** | Historique détaillé avec client, pays et type |
+| **📝 Événements** | Historique détaillé avec filtres par type et plage de dates |
 | **📱 Telegram** | Notifications push configurables (15 types d'événements) |
-| **💾 Sauvegardes** | Backup/restore de la base de données |
-| **🌐 Géolocalisation** | Détection automatique du pays via ip-api.com |
+| **🔗 Webhooks** | Notifications Discord, Slack et webhooks personnalisés |
+| **💾 Sauvegardes** | Backup/restore de la base de données + backup automatique quotidien |
+| **🌐 Géolocalisation** | Détection automatique du pays avec carte géo interactive |
 | **🚀 Mises à jour** | Notification automatique lors de nouvelles releases GitHub |
+| **📊 Graphiques** | Viewers 24h, Top Chaînes, Top Clients, Connexions 7 jours |
+| **🖥️ Monitoring** | CPU, disque, mémoire, versions PHP/Laravel |
+| **🔒 Auth** | Système de login avec tokens + changement email/mot de passe |
+| **📥 Export** | Export CSV/JSON des clients et événements |
+| **🎨 Thème** | Mode sombre/clair avec toggle ☀️/🌙 |
 
 ### Dashboard
 
 - **Stats globales** : chaînes, viewers actifs, événements 24h
+- **4 graphiques** : Viewers 24h, Top Chaînes (7j), Top Clients, Connexions (7j)
+- **Carte géo** interactive avec clustering par pays
+- **Monitoring système** en temps réel (CPU, disque, mémoire)
 - **Auto-refresh** toutes les 10 secondes
-- **Dark theme** avec design moderne
+- **Notifications toast** quand des clients se connectent/déconnectent
+- **Mode sombre/clair** avec préférence sauvegardée
 - **Version dynamique** avec notification de mise à jour
 
 ---
