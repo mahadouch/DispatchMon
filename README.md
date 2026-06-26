@@ -45,13 +45,13 @@ Dashboard web temps réel pour **Dispatcharr** — monitorer les chaînes, clien
 
 ## 📸 Screenshots
 
-| Dashboard | Chaînes | Événements |
-|-----------|---------|------------|
-| ![Clients](screenshots/01-clients.png) | ![Chaînes](screenshots/03-chaines.png) | ![Événements](screenshots/04-evenements.png) |
+| Clients | Actifs | Chaînes |
+|---------|--------|---------|
+| ![Clients](screenshots/01-clients-tab.png) | ![Actifs](screenshots/02-active-clients-tab.png) | ![Chaînes](screenshots/03-channels-tab.png) |
 
-| Paramètres Telegram | Sauvegardes | À propos |
-|---------------------|-------------|----------|
-| ![Telegram](screenshots/05-parametres-telegram.png) | ![Backups](screenshots/06-parametres-backups.png) | |
+| Événements | Paramètres | |
+|------------|------------|---|
+| ![Événements](screenshots/04-events-tab.png) | ![Paramètres](screenshots/05-settings-general-tab.png) | |
 
 ---
 
