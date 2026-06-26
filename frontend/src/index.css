@@ -188,6 +188,11 @@ tbody tr:hover { background: rgba(88,166,255,.04); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
 /* Grid 2 */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ViewerTimeline, TopChannelsChart, TopClientsChart, WeeklyConnections } from './components/Charts'
+import { ToastContainer, showToast } from './components/Toast'
 
 const API = '/api'
 
@@ -104,7 +105,18 @@ export default function App() {
             if (evRes.status === 'fulfilled') setEvents(evRes.value)
             if (typeRes.status === 'fulfilled') setEventsByType(typeRes.value)
             if (kcRes.status === 'fulfilled') setKnownClients(kcRes.value)
-            if (acRes.status === 'fulfilled') setActiveClients(acRes.value)
+            if (acRes.status === 'fulfilled') {
+                const newActive = acRes.value
+                if (activeClients.length > 0 && newActive.length > activeClients.length) {
+                    const diff = newActive.length - activeClients.length
+                    showToast(`${diff} nouveau(x) client(s) connecté(s)`, 'success')
+                }
+                if (activeClients.length > 0 && newActive.length < activeClients.length) {
+                    const diff = activeClients.length - newActive.length
+                    showToast(`${diff} client(s) déconnecté(s)`, 'info')
+                }
+                setActiveClients(newActive)
+            }
             if (csRes.status === 'fulfilled') setClientStats(csRes.value)
             if (m3uRes.status === 'fulfilled') setM3u(m3uRes.value)
             if (settingsRes.status === 'fulfilled') setSettings(settingsRes.value)
@@ -188,6 +200,7 @@ export default function App() {
 
     return (
         <>
+            <ToastContainer />
             <div className="header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <h1>📊 <span>DispatchMon</span></h1>
