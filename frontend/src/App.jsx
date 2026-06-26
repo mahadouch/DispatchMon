@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { ViewerTimeline, TopChannelsChart, TopClientsChart, WeeklyConnections } from './components/Charts'
 import { ToastContainer, showToast } from './components/Toast'
 import Login from './components/Login'
+import GeoMap from './components/GeoMap'
 
 const API = '/api'
 
@@ -426,6 +427,15 @@ export default function App() {
                                     <div>Laravel <strong>{systemInfo.laravel}</strong></div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {knownClients.length > 0 && (
+                    <div className="sec" style={{ marginBottom: 24 }}>
+                        <div className="sec-hdr"><h2>🌍 Clients par pays</h2></div>
+                        <div style={{ padding: 16 }}>
+                            <GeoMap clients={knownClients} />
                         </div>
                     </div>
                 )}
