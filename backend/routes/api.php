@@ -61,3 +61,11 @@ Route::get('/version/check', [VersionController::class, 'check']);
 
 // Update API
 Route::post('/update', [UpdateController::class, 'update']);
+
+// Export API
+Route::prefix('export')->group(function () {
+    Route::get('/clients', [\App\Http\Controllers\ExportController::class, 'clients']);
+    Route::get('/events', [\App\Http\Controllers\ExportController::class, 'events']);
+    Route::get('/clients/json', [\App\Http\Controllers\ExportController::class, 'clientsJson']);
+    Route::get('/events/json', [\App\Http\Controllers\ExportController::class, 'eventsJson']);
+});

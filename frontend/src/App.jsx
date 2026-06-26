@@ -368,6 +368,16 @@ export default function App() {
                                 <span style={{ fontSize: 12, color: 'var(--t3)' }}>
                                     {filteredClients.length} clients
                                 </span>
+                                <a href={`${API}/export/clients`} style={{
+                                    background: 'var(--bg2)', border: '1px solid var(--border)',
+                                    padding: '6px 12px', borderRadius: 6, fontSize: 12, color: 'var(--t2)',
+                                    textDecoration: 'none', marginLeft: 'auto'
+                                }}>📥 CSV</a>
+                                <a href={`${API}/export/clients/json`} style={{
+                                    background: 'var(--bg2)', border: '1px solid var(--border)',
+                                    padding: '6px 12px', borderRadius: 6, fontSize: 12, color: 'var(--t2)',
+                                    textDecoration: 'none'
+                                }}>{'{ }'} JSON</a>
                             </div>
                             <div style={{ maxHeight: 500, overflow: 'auto' }}>
                                 <table>
@@ -534,6 +544,16 @@ export default function App() {
                                 <span style={{ fontSize: 12, color: 'var(--t3)' }}>
                                     {filteredEvents.length} événements
                                 </span>
+                                <a href={`${API}/export/events`} style={{
+                                    background: 'var(--bg2)', border: '1px solid var(--border)',
+                                    padding: '6px 12px', borderRadius: 6, fontSize: 12, color: 'var(--t2)',
+                                    textDecoration: 'none', marginLeft: 'auto'
+                                }}>📥 CSV</a>
+                                <a href={`${API}/export/events/json`} style={{
+                                    background: 'var(--bg2)', border: '1px solid var(--border)',
+                                    padding: '6px 12px', borderRadius: 6, fontSize: 12, color: 'var(--t2)',
+                                    textDecoration: 'none'
+                                }}>{'{ }'} JSON</a>
                             </div>
                             <div style={{ maxHeight: 500, overflow: 'auto' }}>
                             <table>
