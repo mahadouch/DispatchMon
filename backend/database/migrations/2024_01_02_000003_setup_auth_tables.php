@@ -21,6 +21,13 @@ return new class extends Migration
                 $table->rememberToken();
                 $table->timestamps();
             });
+        } else {
+            // Ajouter role si elle manque
+            if (!Schema::hasColumn('users', 'role')) {
+                Schema::table('users', function (Blueprint $table) {
+                    $table->string('role')->default('admin')->after('password');
+                });
+            }
         }
 
         // Créer api_tokens si pas encore présent
