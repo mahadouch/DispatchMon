@@ -102,16 +102,33 @@ Dashboard web temps réel pour **Dispatcharr** — monitorer les chaînes, clien
 
 ## 🚀 Installation
 
-### 1. Cloner le repo
+### Installation rapide (recommandée)
 
 ```bash
-git clone https://github.com/mahadouch/dispatcharr-platform.git
-cd dispatcharr-platform
+curl -fsSL https://raw.githubusercontent.com/mahadouch/DispatchMon/main/install.sh | bash
 ```
 
-### 2. Lancer avec Docker
+Le script automatise :
+- Installation de Docker + Docker Compose (si nécessaire)
+- Clonage du repo
+- Build des images Docker
+- Démarrage des conteneurs
+- Exécution des migrations
+- Configuration Telegram (via .env)
+
+### Mise à jour
 
 ```bash
+cd ~/DispatchMon && git pull && docker compose up -d --build
+```
+
+### Installation manuelle
+
+```bash
+git clone https://github.com/mahadouch/DispatchMon.git
+cd DispatchMon
+docker compose up -d --build
+```
 docker compose up -d --build
 ```
 
