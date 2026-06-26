@@ -160,10 +160,11 @@ export default function App() {
     }, [])
 
     useEffect(() => {
+        if (!user) return
         fetchData()
         const timer = setInterval(fetchData, 10000)
         return () => clearInterval(timer)
-    }, [fetchData])
+    }, [fetchData, user])
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme)
