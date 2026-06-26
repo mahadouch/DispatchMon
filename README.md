@@ -153,6 +153,214 @@ Dans votre serveur Dispatcharr, configurez l'intégration webhook :
 
 ---
 
+## 📋 Templates Webhook Dispatcharr
+
+Voici les payloads envoyés par Dispatcharr via la Connect Integration. Copiez-collez ces exemples pour tester votre endpoint.
+
+### 🔌 client_connect
+
+```json
+{
+  "event": "client_connect",
+  "channel_name": "beIN Sports 1",
+  "stream_name": "beinsports1-hd",
+  "stream_url": "http://source.example.com/live/stream1",
+  "client_ip": "192.168.1.100",
+  "client_id": "abc123-def456",
+  "user_agent": "VLC/3.0.21 LibVLC/3.0.21",
+  "username": "user123",
+  "timestamp": "2025-06-26T10:30:00Z"
+}
+```
+
+**Champs traités :**
+| Champ | Type | Description |
+|-------|------|-------------|
+| `event` | string | Type d'événement (`client_connect`) |
+| `channel_name` | string | Nom de la chaîne regardée |
+| `stream_name` | string | Nom du stream |
+| `client_ip` | string | IP du client |
+| `client_id` | string | ID unique de la session client |
+| `user_agent` | string | User-Agent du lecteur |
+| `username` | string | Nom d'utilisateur (si authentifié) |
+
+---
+
+### 🔴 client_disconnect
+
+```json
+{
+  "event": "client_disconnect",
+  "channel_name": "beIN Sports 1",
+  "client_ip": "192.168.1.100",
+  "client_id": "abc123-def456",
+  "username": "user123",
+  "duration": 3600.5,
+  "bytes_sent": 2147483648,
+  "reason": "client_closed",
+  "timestamp": "2025-06-26T11:30:00Z"
+}
+```
+
+**Champs traités :**
+| Champ | Type | Description |
+|-------|------|-------------|
+| `duration` | float | Durée de la session en secondes |
+| `bytes_sent` | int | Volume total envoyé en octets |
+| `reason` | string | Raison de la déconnexion |
+
+---
+
+### ▶️ channel_start
+
+```json
+{
+  "event": "channel_start",
+  "channel_name": "beIN Sports 1",
+  "stream_name": "beinsports1-hd",
+  "stream_url": "http://source.example.com/live/stream1",
+  "provider_name": "M3U Account 1",
+  "profile_used": "default",
+  "source_name": "source-1",
+  "timestamp": "2025-06-26T10:00:00Z"
+}
+```
+
+**Champs traités :**
+| Champ | Type | Description |
+|-------|------|-------------|
+| `provider_name` | string | Nom du compte M3U/fournisseur |
+| `profile_used` | string | Profil de transcodage utilisé |
+| `source_name` | string | Nom de la source |
+
+---
+
+### ⏹️ channel_stop
+
+```json
+{
+  "event": "channel_stop",
+  "channel_name": "beIN Sports 1",
+  "runtime": 7200.3,
+  "total_bytes": 4294967296,
+  "reason": "stream_ended",
+  "timestamp": "2025-06-26T12:00:00Z"
+}
+```
+
+**Champs traités :**
+| Champ | Type | Description |
+|-------|------|-------------|
+| `runtime` | float | Durée du stream en secondes |
+| `total_bytes` | int | Volume total transféré en octets |
+| `reason` | string | Raison de l'arrêt |
+
+---
+
+### ⚠️ stream_error
+
+```json
+{
+  "event": "stream_error",
+  "channel_name": "beIN Sports 1",
+  "stream_name": "beinsports1-hd",
+  "error_type": "connection_timeout",
+  "error_message": "Could not connect to upstream source after 30s",
+  "source_name": "source-1",
+  "provider_name": "M3U Account 1",
+  "timestamp": "2025-06-26T10:05:00Z"
+}
+```
+
+**Champs traités :**
+| Champ | Type | Description |
+|-------|------|-------------|
+| `error_type` | string | Type d'erreur |
+| `error_message` | string | Message d'erreur détaillé |
+
+---
+
+### 📡 m3u_refresh
+
+```json
+{
+  "event": "m3u_refresh",
+  "account_name": "M3U Account 1",
+  "channels_count": 1058,
+  "streams_created": 12,
+  "streams_updated": 5,
+  "streams_deleted": 2,
+  "programs": 850,
+  "timestamp": "2025-06-26T06:00:00Z"
+}
+```
+
+**Champs traités :**
+| Champ | Type | Description |
+|-------|------|-------------|
+| `account_name` | string | Nom du compte M3U |
+| `channels_count` | int | Nombre total de chaînes |
+| `streams_created` | int | Nouveaux streams créés |
+| `streams_updated` | int | Streams mis à jour |
+| `streams_deleted` | int | Streams supprimés |
+| `programs` | int | Nombre de programmes EPG |
+
+---
+
+### 🔑 login_success / login_failed
+
+```json
+{
+  "event": "login_success",
+  "username": "user123",
+  "client_ip": "192.168.1.100",
+  "user_agent": "VLC/3.0.21",
+  "timestamp": "2025-06-26T10:30:00Z"
+}
+```
+
+```json
+{
+  "event": "login_failed",
+  "username": "hacker99",
+  "client_ip": "45.33.100.5",
+  "user_agent": "curl/7.88.1",
+  "error_message": "Invalid credentials",
+  "timestamp": "2025-06-26T10:31:00Z"
+}
+```
+
+---
+
+### 🔀 stream_switch / channel_failover
+
+```json
+{
+  "event": "stream_switch",
+  "channel_name": "beIN Sports 1",
+  "stream_name": "beinsports1-hd",
+  "source_name": "source-2",
+  "reason": "source_unavailable",
+  "timestamp": "2025-06-26T10:15:00Z"
+}
+```
+
+---
+
+### 🎬 recording_start / recording_end
+
+```json
+{
+  "event": "recording_start",
+  "channel_name": "beIN Sports 1",
+  "content_name": "Match_Ligue1_2025",
+  "content_uuid": "rec-uuid-12345",
+  "timestamp": "2025-06-26T20:00:00Z"
+}
+```
+
+---
+
 ## 📱 Notifications Telegram
 
 ### Étape 1 : Créer un bot
