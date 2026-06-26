@@ -834,44 +834,6 @@ export default function App() {
                                             >
                                                 🐙 GitHub
                                             </a>
-                                            <button
-                                                onClick={async () => {
-                                                    setShowUpdateModal(true)
-                                                    setUpdateLogs([{ step: 'Démarrage...', status: 'running', output: '' }])
-                                                    setUpdateRunning(true)
-                                                    try {
-                                                        const res = await fetch(`${API}/update`, { method: 'POST' })
-                                                        const data = await res.json()
-                                                        if (data.status === 'host_required') {
-                                                            setUpdateLogs([
-                                                                ...data.logs,
-                                                                { step: 'Commande à exécuter sur l\'hôte', status: 'info', output: data.command }
-                                                            ])
-                                                            setUpdateRunning(false)
-                                                        } else {
-                                                            setUpdateLogs(data.logs || [])
-                                                            setUpdateRunning(false)
-                                                            if (data.status === 'ok') {
-                                                                setTimeout(() => window.location.reload(), 5000)
-                                                            }
-                                                        }
-                                                    } catch (e) {
-                                                        setUpdateLogs(prev => [...prev, { step: 'Erreur', status: 'error', output: e.message }])
-                                                        setUpdateRunning(false)
-                                                    }
-                                                }}
-                                                style={{
-                                                    background: updateInfo?.update_available
-                                                        ? 'linear-gradient(135deg, rgba(59,130,246,0.3), rgba(147,51,234,0.3))'
-                                                        : 'var(--bg2)',
-                                                    border: '1px solid var(--border)',
-                                                    padding: '8px 16px', borderRadius: 6, fontSize: 13,
-                                                    color: updateInfo?.update_available ? 'var(--blue)' : 'var(--t2)',
-                                                    cursor: 'pointer', fontWeight: updateInfo?.update_available ? 600 : 400
-                                                }}
-                                            >
-                                                {updateInfo?.update_available ? `🚀 Mettre à jour (v${updateInfo.latest})` : '🔄 Vérifier les mises à jour'}
-                                            </button>
                                         </div>
 
                                         {/* Credits */}
