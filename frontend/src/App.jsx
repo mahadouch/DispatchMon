@@ -141,6 +141,29 @@ export default function App() {
         c.country?.toLowerCase().includes(search.toLowerCase())
     )
 
+    const filteredActive = activeClients.filter(c =>
+        !search ||
+        c.client_ip?.toLowerCase().includes(search.toLowerCase()) ||
+        c.username?.toLowerCase().includes(search.toLowerCase()) ||
+        c.channel_name?.toLowerCase().includes(search.toLowerCase()) ||
+        c.country?.toLowerCase().includes(search.toLowerCase())
+    )
+
+    const filteredChannels = channels.filter(ch =>
+        !search ||
+        ch.name?.toLowerCase().includes(search.toLowerCase()) ||
+        ch.group_name?.toLowerCase().includes(search.toLowerCase())
+    )
+
+    const filteredEvents = events.filter(ev =>
+        !search ||
+        ev.event_type?.toLowerCase().includes(search.toLowerCase()) ||
+        ev.channel_name?.toLowerCase().includes(search.toLowerCase()) ||
+        ev.client_ip?.toLowerCase().includes(search.toLowerCase()) ||
+        ev.username?.toLowerCase().includes(search.toLowerCase()) ||
+        ev.country?.toLowerCase().includes(search.toLowerCase())
+    )
+
     if (loading) {
         return (
             <div style={{ padding: 48, textAlign: 'center' }}>
@@ -327,7 +350,22 @@ export default function App() {
 
                     {/* Active Clients Tab */}
                     {activeTab === 'active' && (
-                        <div style={{ maxHeight: 500, overflow: 'auto' }}>
+                        <div>
+                            <div style={{ padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <input
+                                    type="text" placeholder="🔍 Rechercher IP, chaîne, pays..."
+                                    value={search} onChange={e => setSearch(e.target.value)}
+                                    style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        color: 'var(--t1)', padding: '6px 12px', borderRadius: 6,
+                                        fontSize: 13, width: 300
+                                    }}
+                                />
+                                <span style={{ fontSize: 12, color: 'var(--t3)' }}>
+                                    {filteredActive.length} actifs
+                                </span>
+                            </div>
+                            <div style={{ maxHeight: 500, overflow: 'auto' }}>
                             <table>
                                 <thead>
                                     <tr>
@@ -340,9 +378,9 @@ export default function App() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {activeClients.length === 0 ? (
+                                    {filteredActive.length === 0 ? (
                                         <tr><td colSpan={6}><div className="empty">Aucun client actif</div></td></tr>
-                                    ) : activeClients.map(c => (
+                                    ) : filteredActive.map(c => (
                                         <tr key={c.id}>
                                             <td style={{ fontWeight: 500 }}>{c.channel_name}</td>
                                             <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{c.client_ip || '—'}</td>
@@ -359,18 +397,34 @@ export default function App() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     )}
 
                     {/* Channels Tab */}
                     {activeTab === 'channels' && (
-                        <div style={{ maxHeight: 500, overflow: 'auto' }}>
+                        <div>
+                            <div style={{ padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <input
+                                    type="text" placeholder="🔍 Rechercher chaîne, groupe..."
+                                    value={search} onChange={e => setSearch(e.target.value)}
+                                    style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        color: 'var(--t1)', padding: '6px 12px', borderRadius: 6,
+                                        fontSize: 13, width: 300
+                                    }}
+                                />
+                                <span style={{ fontSize: 12, color: 'var(--t3)' }}>
+                                    {filteredChannels.length} chaînes
+                                </span>
+                            </div>
+                            <div style={{ maxHeight: 500, overflow: 'auto' }}>
                             <table>
                                 <thead><tr><th>Chaîne</th><th>Groupe</th><th>Viewers</th><th>Clients</th><th>Statut</th><th>Dernière activité</th></tr></thead>
                                 <tbody>
-                                    {channels.length === 0 ? (
+                                    {filteredChannels.length === 0 ? (
                                         <tr><td colSpan={6}><div className="empty">Aucune chaîne</div></td></tr>
-                                    ) : channels.map(ch => (
+                                    ) : filteredChannels.map(ch => (
                                         <tr key={ch.id}>
                                             <td style={{ fontWeight: 500 }}>{ch.name}</td>
                                             <td style={{ color: 'var(--t2)' }}>{ch.group_name || '—'}</td>
@@ -396,12 +450,28 @@ export default function App() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     )}
 
                     {/* Events Tab */}
                     {activeTab === 'events' && (
-                        <div style={{ maxHeight: 500, overflow: 'auto' }}>
+                        <div>
+                            <div style={{ padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <input
+                                    type="text" placeholder="🔍 Rechercher type, chaîne, client..."
+                                    value={search} onChange={e => setSearch(e.target.value)}
+                                    style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        color: 'var(--t1)', padding: '6px 12px', borderRadius: 6,
+                                        fontSize: 13, width: 300
+                                    }}
+                                />
+                                <span style={{ fontSize: 12, color: 'var(--t3)' }}>
+                                    {filteredEvents.length} événements
+                                </span>
+                            </div>
+                            <div style={{ maxHeight: 500, overflow: 'auto' }}>
                             <table>
                                 <thead>
                                     <tr>
@@ -414,9 +484,9 @@ export default function App() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {events.length === 0 ? (
+                                    {filteredEvents.length === 0 ? (
                                         <tr><td colSpan={6}><div className="empty">Aucun événement</div></td></tr>
-                                    ) : events.map(ev => (
+                                    ) : filteredEvents.map(ev => (
                                         <tr key={ev.id}>
                                             <td>
                                                 <span style={{ marginRight: 6 }}>{EVENT_ICONS[ev.event_type] || '📌'}</span>
@@ -448,6 +518,7 @@ export default function App() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     )}
                 </div>
