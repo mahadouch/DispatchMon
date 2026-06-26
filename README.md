@@ -1,4 +1,4 @@
-# 📊 Dispatcharr Platform
+# 📊 DispatchMon
 
 Dashboard web temps réel pour **Dispatcharr** — monitorer les chaînes, clients, événements et notifications Telegram.
 
