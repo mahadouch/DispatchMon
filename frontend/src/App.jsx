@@ -66,7 +66,7 @@ export default function App() {
     const [telegramTest, setTelegramTest] = useState(null)
     const [telegramSaving, setTelegramSaving] = useState(false)
     const [backups, setBackups] = useState([])
-    const [settingsTab, setSettingsTab] = useState('telegram')
+    const [settingsTab, setSettingsTab] = useState('general')
     const [version, setVersion] = useState(null)
     const [updateInfo, setUpdateInfo] = useState(null)
     const [showUpdateNotif, setShowUpdateNotif] = useState(false)
