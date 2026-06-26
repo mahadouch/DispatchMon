@@ -367,7 +367,6 @@ export default function App() {
                         </div>
                     </div>
                 )}
-            </div>
                     {/* Settings Tab */}
                     {activeTab === 'settings' && (
                         <div className="sec" style={{ marginTop: 16 }}>
