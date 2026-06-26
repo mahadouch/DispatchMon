@@ -233,8 +233,7 @@ class TelegramService
             }
         }
 
-        $date = now()->format('d/m/Y H:i');
-        $msg .= "\n🕐 {$date}";
+        // Pas de date ici, formatEvent l'ajoute
 
         return $msg;
     }
