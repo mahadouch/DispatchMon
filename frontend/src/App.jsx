@@ -279,16 +279,29 @@ export default function App() {
                     {activeTab === 'channels' && (
                         <div style={{ maxHeight: 500, overflow: 'auto' }}>
                             <table>
-                                <thead><tr><th>Chaîne</th><th>Groupe</th><th>Viewers</th><th>Statut</th><th>Dernière activité</th></tr></thead>
+                                <thead><tr><th>Chaîne</th><th>Groupe</th><th>Viewers</th><th>Clients</th><th>Statut</th><th>Dernière activité</th></tr></thead>
                                 <tbody>
                                     {channels.length === 0 ? (
-                                        <tr><td colSpan={5}><div className="empty">Aucune chaîne</div></td></tr>
+                                        <tr><td colSpan={6}><div className="empty">Aucune chaîne</div></td></tr>
                                     ) : channels.map(ch => (
                                         <tr key={ch.id}>
                                             <td style={{ fontWeight: 500 }}>{ch.name}</td>
                                             <td style={{ color: 'var(--t2)' }}>{ch.group_name || '—'}</td>
                                             <td style={{ fontWeight: 700, color: ch.current_viewers > 0 ? 'var(--green)' : 'var(--t3)' }}>
                                                 {ch.current_viewers}
+                                            </td>
+                                            <td>
+                                                {ch.active_clients_list && ch.active_clients_list.length > 0 ? (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                        {ch.active_clients_list.map((cl, i) => (
+                                                            <span key={i} style={{ fontSize: 11, color: 'var(--t2)' }}>
+                                                                {FLAGS[cl.country_code] || '🌍'} {cl.username || cl.client_ip}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ fontSize: 11, color: 'var(--t3)' }}>—</span>
+                                                )}
                                             </td>
                                             <td>{ch.is_active ? <span className="pill pill-g">● Live</span> : <span className="pill pill-b">○ Off</span>}</td>
                                             <td style={{ fontSize: 12, color: 'var(--t3)' }}>{timeAgo(ch.last_seen)}</td>

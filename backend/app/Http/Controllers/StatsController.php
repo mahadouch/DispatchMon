@@ -42,6 +42,14 @@ class StatsController extends Controller
             ->orderByDesc('last_seen')
             ->get();
 
+        // Enrichir chaque chaîne avec la liste des clients actifs
+        foreach ($channels as $channel) {
+            $channel->active_clients_list = ActiveClient::where('channel_name', $channel->name)
+                ->select('client_ip', 'username', 'country', 'country_code', 'connected_at')
+                ->orderByDesc('connected_at')
+                ->get();
+        }
+
         return response()->json($channels);
     }
 
