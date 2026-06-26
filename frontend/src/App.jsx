@@ -842,10 +842,18 @@ export default function App() {
                                                     try {
                                                         const res = await fetch(`${API}/update`, { method: 'POST' })
                                                         const data = await res.json()
-                                                        setUpdateLogs(data.logs || [])
-                                                        setUpdateRunning(false)
-                                                        if (data.status === 'ok') {
-                                                            setTimeout(() => window.location.reload(), 5000)
+                                                        if (data.status === 'host_required') {
+                                                            setUpdateLogs([
+                                                                ...data.logs,
+                                                                { step: 'Commande à exécuter sur l\'hôte', status: 'info', output: data.command }
+                                                            ])
+                                                            setUpdateRunning(false)
+                                                        } else {
+                                                            setUpdateLogs(data.logs || [])
+                                                            setUpdateRunning(false)
+                                                            if (data.status === 'ok') {
+                                                                setTimeout(() => window.location.reload(), 5000)
+                                                            }
                                                         }
                                                     } catch (e) {
                                                         setUpdateLogs(prev => [...prev, { step: 'Erreur', status: 'error', output: e.message }])
@@ -920,10 +928,11 @@ export default function App() {
                                             color: log.status === 'ok' ? 'var(--green)'
                                                  : log.status === 'error' ? 'var(--red)'
                                                  : log.status === 'skip' ? 'var(--t3)'
+                                                 : log.status === 'info' ? '#f0883e'
                                                  : '#58a6ff',
                                             fontWeight: 600
                                         }}>
-                                            {log.status === 'ok' ? '✅' : log.status === 'error' ? '❌' : log.status === 'skip' ? '⏭️' : '⏳'}
+                                            {log.status === 'ok' ? '✅' : log.status === 'error' ? '❌' : log.status === 'skip' ? '⏭️' : log.status === 'info' ? '📋' : '⏳'}
                                             {' '}{log.step}
                                         </span>
                                     </div>

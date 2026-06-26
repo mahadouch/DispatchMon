@@ -9,62 +9,52 @@ class UpdateController extends Controller
 {
     /**
      * POST /api/update
-     * Pull le dernier code et redémarre le service
+     * Tente de faire l'update, sinon retourne la commande à exécuter
      */
     public function update(): JsonResponse
     {
         $logs = [];
-        $basePath = base_path('..');
+        $hostPath = env('HOST_PATH', '/home/mahadouch/DispatchMon');
 
         // 1. Git pull
         $logs[] = ['step' => 'git pull', 'status' => 'running'];
-        $git = Process::run("cd {$basePath} && git pull origin master 2>&1");
+        $git = Process::timeout(60)->run("git -C {$hostPath} pull origin master 2>&1");
+        $gitOutput = trim($git->output());
+
+        if (!$git->successful() && (str_contains($gitOutput, 'not a git') || str_contains($gitOutput, 'No such file'))) {
+            // Le repo n'est pas accessible depuis le conteneur
+            $logs[] = ['step' => 'git pull', 'status' => 'error', 'output' => 'Pas d\'accès au repo depuis le conteneur'];
+
+            return response()->json([
+                'status' => 'host_required',
+                'message' => 'Mise à jour impossible depuis le conteneur. Exécutez la commande sur l\'hôte :',
+                'command' => "cd {$hostPath} && git pull && docker compose up -d --build",
+                'logs' => $logs,
+            ]);
+        }
+
         $logs[] = [
             'step' => 'git pull',
             'status' => $git->successful() ? 'ok' : 'error',
-            'output' => trim($git->output()),
+            'output' => $gitOutput ?: 'Already up to date',
         ];
 
-        if (!$git->successful()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Échec du git pull',
-                'logs' => $logs,
-            ], 500);
-        }
-
-        // 2. Vérifier si le backend doit être rebuild
-        $output = $git->output();
-        $backendChanged = str_contains($output, 'backend/') || str_contains($output, 'Dockerfile') || str_contains($output, 'VERSION');
-        if ($backendChanged) {
-            $logs[] = ['step' => 'build backend', 'status' => 'running'];
-            $build = Process::run("cd {$basePath} && docker compose build backend 2>&1");
-            $logs[] = [
-                'step' => 'build backend',
-                'status' => $build->successful() ? 'ok' : 'error',
-                'output' => $this->lastLines($build->output(), 10),
-            ];
-        } else {
-            $logs[] = ['step' => 'build backend', 'status' => 'skip', 'output' => 'Pas de changement backend'];
-        }
-
-        // 3. Redémarrer les conteneurs
-        $logs[] = ['step' => 'restart containers', 'status' => 'running'];
-        $restart = Process::run("cd {$basePath} && docker compose up -d 2>&1");
+        // 2. Build + restart
+        $logs[] = ['step' => 'build & restart', 'status' => 'running'];
+        $build = Process::timeout(180)->run("cd {$hostPath} && docker compose up -d --build 2>&1");
         $logs[] = [
-            'step' => 'restart containers',
-            'status' => $restart->successful() ? 'ok' : 'error',
-            'output' => trim($restart->output()),
+            'step' => 'build & restart',
+            'status' => $build->successful() ? 'ok' : 'error',
+            'output' => $this->lastLines($build->output(), 10),
         ];
 
-        // 4. Attendre le démarrage
-        $logs[] = ['step' => 'wait startup', 'status' => 'running'];
+        // 3. Attendre
         sleep(3);
-        $logs[] = ['step' => 'wait startup', 'status' => 'ok', 'output' => 'Backend prêt'];
+        $logs[] = ['step' => 'wait startup', 'status' => 'ok', 'output' => 'Services prêts'];
 
-        // 5. Migrations
+        // 4. Migrations
         $logs[] = ['step' => 'migrations', 'status' => 'running'];
-        $migrate = Process::run("cd {$basePath} && docker compose exec -T backend php artisan migrate --force 2>&1");
+        $migrate = Process::timeout(30)->run("cd {$hostPath} && docker compose exec -T backend php artisan migrate --force 2>&1");
         $logs[] = [
             'step' => 'migrations',
             'status' => $migrate->successful() ? 'ok' : 'skip',
@@ -73,7 +63,7 @@ class UpdateController extends Controller
 
         return response()->json([
             'status' => 'ok',
-            'message' => 'Mise à jour terminée avec succès',
+            'message' => 'Mise à jour terminée — rechargez la page',
             'logs' => $logs,
         ]);
     }
