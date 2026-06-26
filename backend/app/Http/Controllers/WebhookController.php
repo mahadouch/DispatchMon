@@ -172,8 +172,21 @@ class WebhookController extends Controller
             return ['code' => 'MA', 'name' => 'Maroc'];
         }
 
-        // Pour les IPs publiques, fallback basique
-        // En prod, utiliser un service comme ip-api.com ou MaxMind
+        // Utiliser ip-api.com pour les IPs publiques
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(2)
+                ->get("http://ip-api.com/json/{$ip}", ['fields' => 'countryCode,country']);
+
+            if ($response->successful() && $response->json('status') === 'success') {
+                return [
+                    'code' => $response->json('countryCode'),
+                    'name' => $response->json('country'),
+                ];
+            }
+        } catch (\Exception $e) {
+            // Fallback silencieux
+        }
+
         return ['code' => 'XX', 'name' => 'Inconnu'];
     }
 }
