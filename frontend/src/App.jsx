@@ -402,31 +402,52 @@ export default function App() {
                     {/* Events Tab */}
                     {activeTab === 'events' && (
                         <div style={{ maxHeight: 500, overflow: 'auto' }}>
-                            {events.length === 0 ? (
-                                <div className="empty">Aucun événement</div>
-                            ) : events.map(ev => (
-                                <div key={ev.id} className="log-entry">
-                                    <span>{EVENT_ICONS[ev.event_type] || '📌'}</span>
-                                    <span className="log-time">{timeAgo(ev.created_at)}</span>
-                                    <div className="log-msg">
-                                        <strong>{ev.event_type}</strong>
-                                        {ev.channel_name && <> — <span style={{ color: 'var(--blue)' }}>{ev.channel_name}</span></>}
-                                        {(ev.client_ip || ev.username) && (
-                                            <span style={{ fontSize: 11, color: 'var(--t3)', marginLeft: 8 }}>
-                                                👤 {ev.username || ev.client_ip || '—'}
-                                            </span>
-                                        )}
-                                        {(ev.country || ev.country_code) && (
-                                            <span style={{ fontSize: 11, color: 'var(--t3)', marginLeft: 6 }}>
-                                                {FLAGS[ev.country_code] || '🌍'} {ev.country || ''}
-                                            </span>
-                                        )}
-                                        {ev.error_message && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 2 }}>{ev.error_message.substring(0, 120)}</div>}
-                                        {ev.runtime && <span style={{ fontSize: 11, color: 'var(--t3)', marginLeft: 8 }}>{ev.runtime.toFixed(1)}s · {formatBytes(ev.total_bytes)}</span>}
-                                        {ev.duration && <span style={{ fontSize: 11, color: 'var(--t3)', marginLeft: 8 }}>{ev.duration.toFixed(1)}s · {formatBytes(ev.bytes_sent)}</span>}
-                                    </div>
-                                </div>
-                            ))}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Chaîne</th>
+                                        <th>Client</th>
+                                        <th>Pays</th>
+                                        <th>Détails</th>
+                                        <th>Quand</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {events.length === 0 ? (
+                                        <tr><td colSpan={6}><div className="empty">Aucun événement</div></td></tr>
+                                    ) : events.map(ev => (
+                                        <tr key={ev.id}>
+                                            <td>
+                                                <span style={{ marginRight: 6 }}>{EVENT_ICONS[ev.event_type] || '📌'}</span>
+                                                <span style={{ fontWeight: 500 }}>{ev.event_type}</span>
+                                            </td>
+                                            <td style={{ color: ev.channel_name ? 'var(--blue)' : 'var(--t3)' }}>
+                                                {ev.channel_name || '—'}
+                                            </td>
+                                            <td>
+                                                {ev.username || ev.client_ip ? (
+                                                    <span style={{ fontSize: 12 }}>👤 {ev.username || ev.client_ip}</span>
+                                                ) : '—'}
+                                            </td>
+                                            <td>
+                                                {(ev.country || ev.country_code) ? (
+                                                    <span style={{ fontSize: 12 }}>
+                                                        {FLAGS[ev.country_code] || '🌍'} {ev.country || ''}
+                                                    </span>
+                                                ) : '—'}
+                                            </td>
+                                            <td style={{ fontSize: 12, color: 'var(--t3)' }}>
+                                                {ev.error_message && <span style={{ color: 'var(--red)' }}>{ev.error_message.substring(0, 80)}</span>}
+                                                {ev.runtime && <span>{ev.runtime.toFixed(1)}s · {formatBytes(ev.total_bytes)}</span>}
+                                                {ev.duration && <span>{ev.duration.toFixed(1)}s · {formatBytes(ev.bytes_sent)}</span>}
+                                                {!ev.error_message && !ev.runtime && !ev.duration && '—'}
+                                            </td>
+                                            <td style={{ fontSize: 12, color: 'var(--t3)' }}>{timeAgo(ev.created_at)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </div>
