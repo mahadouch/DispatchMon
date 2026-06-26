@@ -49,9 +49,9 @@ Dashboard web temps réel pour **Dispatcharr** — monitorer les chaînes, clien
 |---------|--------|---------|
 | ![Clients](screenshots/01-clients-tab.png) | ![Actifs](screenshots/02-active-clients-tab.png) | ![Chaînes](screenshots/03-channels-tab.png) |
 
-| Événements | Paramètres | |
-|------------|------------|---|
-| ![Événements](screenshots/04-events-tab.png) | ![Paramètres](screenshots/05-settings-general-tab.png) | |
+| Événements | Paramètres |
+|------------|------------|
+| ![Événements](screenshots/04-events-tab.png) | ![Paramètres](screenshots/05-settings-general-tab.png) | 
 
 ---
 
