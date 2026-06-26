@@ -16,12 +16,15 @@ class SystemController extends Controller
         $diskTotal = disk_total_space('/');
         $diskFree = disk_free_space('/');
         $diskUsed = $diskTotal - $diskFree;
-
-        // Mémoire système
         $memInfo = $this->getMemoryInfo();
+        $cpuInfo = $this->getCpuInfo();
 
         return response()->json([
             'cpu' => [
+                'model' => $cpuInfo['model'],
+                'cores' => $cpuInfo['cores'],
+                'threads' => $cpuInfo['threads'],
+                'usage_percent' => $this->getCpuUsage(),
                 'load_1m' => round($load[0], 2),
                 'load_5m' => round($load[1], 2),
                 'load_15m' => round($load[2], 2),
@@ -50,9 +53,66 @@ class SystemController extends Controller
         ]);
     }
 
+    private function getCpuInfo(): array
+    {
+        $model = 'Unknown';
+        $cores = 0;
+        $threads = 0;
+
+        if (file_exists('/proc/cpuinfo')) {
+            $cpuinfo = file_get_contents('/proc/cpuinfo');
+            if (preg_match('/^model name\s*:\s*(.+)$/m', $cpuinfo, $m)) {
+                $model = trim($m[1]);
+            }
+            if (preg_match('/^cpu cores\s*:\s*(\d+)$/m', $cpuinfo, $m)) {
+                $cores = (int) $m[1];
+            }
+            if (preg_match('/^siblings\s*:\s*(\d+)$/m', $cpuinfo, $m)) {
+                $threads = (int) $m[1];
+            }
+        }
+
+        return ['model' => $model, 'cores' => $cores, 'threads' => $threads];
+    }
+
+    private function getCpuUsage(): float
+    {
+        if (!file_exists('/proc/stat')) {
+            return 0.0;
+        }
+
+        // Lire les stats CPU deux fois avec un petit délai
+        $stat1 = $this->readCpuStat();
+        usleep(200000); // 200ms
+        $stat2 = $this->readCpuStat();
+
+        $totalDiff = $stat2['total'] - $stat1['total'];
+        $idleDiff = $stat2['idle'] - $stat1['idle'];
+
+        if ($totalDiff == 0) return 0.0;
+
+        return round((1 - $idleDiff / $totalDiff) * 100, 1);
+    }
+
+    private function readCpuStat(): array
+    {
+        $line = '';
+        $handle = fopen('/proc/stat', 'r');
+        if ($handle) {
+            $line = fgets($handle);
+            fclose($handle);
+        }
+
+        $parts = preg_split('/\s+/', trim($line));
+        // user, nice, system, idle, iowait, irq, softirq, steal
+        $idle = (int)($parts[4] ?? 0) + (int)($parts[5] ?? 0);
+        $total = array_sum(array_slice($parts, 1));
+
+        return ['idle' => $idle, 'total' => $total];
+    }
+
     private function getMemoryInfo(): array
     {
-        // Essayer /proc/meminfo (Linux)
         if (file_exists('/proc/meminfo')) {
             $meminfo = file_get_contents('/proc/meminfo');
             $data = [];
@@ -66,8 +126,7 @@ class SystemController extends Controller
             return $data;
         }
 
-        // Fallback: php_uname
-        $total = @php_uname('r') ? 512 * 1024 * 1024 : 0; // estimation
+        $total = 512 * 1024 * 1024;
         return [
             'total' => $total,
             'used' => memory_get_usage(true),

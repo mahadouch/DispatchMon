@@ -401,9 +401,21 @@ export default function App() {
                         <div className="sec-hdr"><h2>🖥️ Système</h2></div>
                         <div style={{ padding: 16, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
                             <div className="card">
-                                <div className="lbl">CPU Load</div>
-                                <div className="val" style={{ fontSize: 20, color: 'var(--blue)' }}>{systemInfo.cpu?.load_1m}</div>
-                                <div className="sub">1m / {systemInfo.cpu?.load_5m} / {systemInfo.cpu?.load_15m}</div>
+                                <div className="lbl">CPU</div>
+                                <div className="val" style={{ fontSize: 20, color: systemInfo.cpu?.usage_percent > 80 ? 'var(--red)' : 'var(--blue)' }}>
+                                    {systemInfo.cpu?.usage_percent}%
+                                </div>
+                                <div className="sub">{systemInfo.cpu?.cores} cores / {systemInfo.cpu?.threads} threads</div>
+                                <div style={{ height: 4, background: 'var(--bg2)', borderRadius: 2, marginTop: 6 }}>
+                                    <div style={{
+                                        height: '100%', borderRadius: 2,
+                                        width: `${systemInfo.cpu?.usage_percent}%`,
+                                        background: systemInfo.cpu?.usage_percent > 80 ? 'var(--red)' : 'var(--blue)'
+                                    }} />
+                                </div>
+                                <div style={{ fontSize: 10, color: 'var(--t3)', marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {systemInfo.cpu?.model}
+                                </div>
                             </div>
                             <div className="card">
                                 <div className="lbl">Disque</div>
