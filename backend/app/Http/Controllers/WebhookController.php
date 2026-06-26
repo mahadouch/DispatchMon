@@ -146,7 +146,7 @@ class WebhookController extends Controller
             'country' => $event->country ?? null,
             'country_code' => $event->country_code ?? null,
         ]);
-        $telegram->notifyEvent($eventType, $eventData);
+        $telegram->notifyEvent($type, $eventData);
     }
 
     /**
