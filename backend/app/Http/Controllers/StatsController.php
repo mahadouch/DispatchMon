@@ -142,11 +142,10 @@ class StatsController extends Controller
      */
     public function clearAll(): JsonResponse
     {
-        $counts = [
-            'events' => DispatcharrEvent::truncate(),
-            'channels' => Channel::query()->update(['current_viewers' => 0, 'is_active' => false]),
-            'active_clients' => ActiveClient::truncate(),
-        ];
+        DispatcharrEvent::truncate();
+        ActiveClient::truncate();
+        Channel::query()->update(['current_viewers' => 0, 'is_active' => false, 'last_seen' => null]);
+        \App\Models\KnownClient::query()->delete();
 
         return response()->json([
             'status' => 'ok',
