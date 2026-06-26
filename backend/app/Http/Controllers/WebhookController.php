@@ -172,16 +172,36 @@ class WebhookController extends Controller
             return ['code' => 'MA', 'name' => 'Maroc'];
         }
 
+        // Vérifier le cache d'abord (24h)
+        $cacheKey = "geo_{$ip}";
+        $cached = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        if ($cached) {
+            return $cached;
+        }
+
+        // Vérifier la base known_clients d'abord
+        $known = \App\Models\KnownClient::where('client_ip', $ip)
+            ->whereNotNull('country_code')
+            ->where('country_code', '!=', 'XX')
+            ->first();
+        if ($known) {
+            $result = ['code' => $known->country_code, 'name' => $known->country];
+            \Illuminate\Support\Facades\Cache::put($cacheKey, $result, 86400);
+            return $result;
+        }
+
         // Utiliser ip-api.com pour les IPs publiques
         try {
             $response = \Illuminate\Support\Facades\Http::timeout(5)
                 ->get("http://ip-api.com/json/{$ip}", ['fields' => 'countryCode,country', 'lang' => 'fr']);
 
             if ($response->successful() && $response->json('status') === 'success') {
-                return [
+                $result = [
                     'code' => $response->json('countryCode'),
                     'name' => $response->json('country'),
                 ];
+                \Illuminate\Support\Facades\Cache::put($cacheKey, $result, 86400);
+                return $result;
             }
         } catch (\Exception $e) {
             // Fallback silencieux
@@ -193,10 +213,12 @@ class WebhookController extends Controller
                 ->get("https://ipapi.co/{$ip}/json/", []);
 
             if ($response->successful() && !$response->json('error')) {
-                return [
+                $result = [
                     'code' => $response->json('country_code'),
                     'name' => $response->json('country_name'),
                 ];
+                \Illuminate\Support\Facades\Cache::put($cacheKey, $result, 86400);
+                return $result;
             }
         } catch (\Exception $e) {
             // Fallback silencieux
