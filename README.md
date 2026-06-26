@@ -121,6 +121,200 @@ Dans votre serveur Dispatcharr, configurez l'intégration webhook :
 
 ---
 
+## 📋 Templates Webhook Dispatcharr
+
+Voici les templates payload exacts configurés dans l'intégration Connect de Dispatcharr. Chaque événement utilise la syntaxe Jinja2 avec `escapejs` et `default`.
+
+### ▶️ channel_start
+
+```json
+{
+  "event": "channel_start",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "stream_name": "{{ stream_name|default:\"-\"|escapejs }}",
+  "stream_url": "{{ stream_url|default:\"-\"|escapejs }}",
+  "provider_name": "{{ provider_name|default:\"-\"|escapejs }}",
+  "profile_used": "{{ profile_used|default:\"-\"|escapejs }}"
+}
+```
+
+### ⏹️ channel_stop
+
+```json
+{
+  "event": "channel_stop",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "runtime": {{ runtime|default:"0" }},
+  "total_bytes": {{ total_bytes|default:"0" }}
+}
+```
+
+### 🔌 client_connect
+
+```json
+{
+  "event": "client_connect",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "client_id": "{{ client_id|default:\"-\"|escapejs }}",
+  "user_agent": "{{ user_agent|default:\"-\"|escapejs }}",
+  "username": "{{ username|default:\"-\"|escapejs }}"
+}
+```
+
+### 🔴 client_disconnect
+
+```json
+{
+  "event": "client_disconnect",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "client_id": "{{ client_id|default:\"-\"|escapejs }}",
+  "duration": {{ duration|default:"0" }},
+  "bytes_sent": {{ bytes_sent|default:"0" }},
+  "username": "{{ username|default:\"-\"|escapejs }}"
+}
+```
+
+### ⚠️ channel_error
+
+```json
+{
+  "event": "channel_error",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "error_type": "{{ error_type|default:\"-\"|escapejs }}",
+  "error_message": "{{ error_message|default:\"-\"|escapejs }}",
+  "attempts": {{ attempts|default:"0" }}
+}
+```
+
+### 🔄 channel_reconnect
+
+```json
+{
+  "event": "channel_reconnect",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "attempt": {{ attempt|default:"0" }},
+  "max_attempts": {{ max_attempts|default:"0" }}
+}
+```
+
+### ⚡ channel_failover
+
+```json
+{
+  "event": "channel_failover",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "reason": "{{ reason|default:\"-\"|escapejs }}",
+  "duration": {{ duration|default:"0" }}
+}
+```
+
+### 🔀 stream_switch
+
+```json
+{
+  "event": "stream_switch",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "new_url": "{{ new_url|default:\"-\"|escapejs }}",
+  "stream_id": {{ stream_id|default:"0" }}
+}
+```
+
+### 📡 m3u_refresh
+
+```json
+{
+  "event": "m3u_refresh",
+  "account_name": "{{ account_name|default:\"-\"|escapejs }}",
+  "elapsed_time": {{ elapsed_time|default:"0" }},
+  "streams_created": {{ streams_created|default:"0" }},
+  "streams_updated": {{ streams_updated|default:"0" }},
+  "streams_deleted": {{ streams_deleted|default:"0" }},
+  "total_processed": {{ total_processed|default:"0" }}
+}
+```
+
+### 📺 epg_refresh
+
+```json
+{
+  "event": "epg_refresh",
+  "source_name": "{{ source_name|default:\"-\"|escapejs }}",
+  "programs": {{ programs|default:"0" }},
+  "channels": {{ channels|default:"0" }},
+  "skipped_programs": {{ skipped_programs|default:"0" }},
+  "unmapped_channels": {{ unmapped_channels|default:"0" }}
+}
+```
+
+### 🚫 login_failed
+
+```json
+{
+  "event": "login_failed",
+  "user": "{{ user|default:\"-\"|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "reason": "{{ reason|default:\"-\"|escapejs }}"
+}
+```
+
+### ⏹️ recording_start / recording_end
+
+```json
+{
+  "event": "recording_start",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "recording_id": {{ recording_id|default:"0" }}
+}
+```
+
+```json
+{
+  "event": "recording_end",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "recording_id": {{ recording_id|default:"0" }},
+  "interrupted": {{ interrupted|default:"false" }},
+  "bytes_written": {{ bytes_written|default:"0" }}
+}
+```
+
+### 🎬 vod_start / vod_stop
+
+```json
+{
+  "event": "vod_start",
+  "content_name": "{{ content_name|default:\"-\"|escapejs }}",
+  "content_uuid": "{{ content_uuid|default:\"-\"|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "username": "{{ username|default:\"-\"|escapejs }}"
+}
+```
+
+### 📌 Résumé des événements
+
+| Événement | Champs principaux | Description |
+|-----------|-------------------|-------------|
+| `channel_start` | channel_name, stream_name, provider_name | Démarrage d'un stream |
+| `channel_stop` | channel_name, runtime, total_bytes | Arrêt d'un stream |
+| `client_connect` | channel_name, client_ip, client_id, username | Connexion client |
+| `client_disconnect` | channel_name, client_ip, duration, bytes_sent | Déconnexion client |
+| `channel_error` | channel_name, error_type, error_message | Erreur de stream |
+| `channel_reconnect` | channel_name, attempt, max_attempts | Tentative de reconnexion |
+| `channel_failover` | channel_name, reason, duration | Basculement source |
+| `stream_switch` | channel_name, new_url, stream_id | Changement de source |
+| `m3u_refresh` | account_name, streams_created/updated/deleted | Rafraîchissement M3U |
+| `epg_refresh` | source_name, programs, channels | Rafraîchissement EPG |
+| `login_failed` | user, client_ip, reason | Échec d'authentification |
+| `recording_start` | channel_name, recording_id | Début d'enregistrement |
+| `recording_end` | channel_name, recording_id, interrupted | Fin d'enregistrement |
+| `vod_start` | content_name, content_uuid, username | Début VOD |
+| `vod_stop` | content_name, content_uuid, username | Fin VOD |
+
+> 💡 **Note :** Les variables `{{ variable|default:"-"|escapejs }}` sont remplacées par Dispatcharr avant l'envoi.
+
+---
+
 ## 📱 Notifications Telegram
 
 ### Configuration
