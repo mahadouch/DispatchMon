@@ -80,3 +80,9 @@ Route::middleware(\App\Http\Middleware\AuthToken::class)->group(function () {
     Route::get('/auth/me', [\App\Http\Controllers\AuthController::class, 'me']);
     Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
 });
+
+// Protected routes (API Key required)
+Route::middleware(\App\Http\Middleware\ApiKey::class)->group(function () {
+    Route::delete('/stats/all', [StatsController::class, 'clearAll']);
+    Route::post('/update', [UpdateController::class, 'update']);
+});
