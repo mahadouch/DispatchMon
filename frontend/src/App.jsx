@@ -71,6 +71,7 @@ export default function App() {
     const [activeTab, setActiveTab] = useState('clients')
     const [search, setSearch] = useState('')
     const [eventFilter, setEventFilter] = useState({ type: '', dateFrom: '', dateTo: '' })
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
     const [settings, setSettings] = useState({})
     const [telegramTest, setTelegramTest] = useState(null)
     const [telegramSaving, setTelegramSaving] = useState(false)
@@ -154,6 +155,11 @@ export default function App() {
         return () => clearInterval(timer)
     }, [fetchData])
 
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme)
+        localStorage.setItem('theme', theme)
+    }, [theme])
+
     const fetchBackups = async () => {
         try {
             const res = await fetch(`${API}/backups`)
@@ -225,6 +231,13 @@ export default function App() {
                     )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} style={{
+                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                        color: 'var(--t2)', padding: '6px 10px', borderRadius: 6,
+                        cursor: 'pointer', fontSize: 14
+                    }}>
+                        {theme === 'dark' ? '☀️' : '🌙'}
+                    </button>
                     <span style={{ fontSize: 12, color: 'var(--t3)' }}>Auto-refresh: 10s</span>
                     <button className="btn" onClick={fetchData} style={{
                         background: 'var(--bg2)', border: '1px solid var(--border)',
