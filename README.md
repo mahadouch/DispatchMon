@@ -102,6 +102,16 @@ docker compose up -d --build
 | **Frontend** | `http://localhost:3000` | Dashboard web |
 | **Backend** | `http://localhost:8000` | API REST |
 
+### Accès par défaut
+
+| Champ | Valeur |
+|-------|--------|
+| **URL** | `http://<VOTRE_IP>:3000` |
+| **Email** | `admin@dispatchmon.local` |
+| **Mot de passe** | `password` |
+
+> ⚠️ Changez le mot de passe dès la première connexion via **Paramètres → Général → Changer le mot de passe**
+
 ---
 
 ## ⚙️ Configuration Dispatcharr
