@@ -8,14 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::table('users')->insert([
-            'name' => 'Admin',
-            'email' => 'admin@dispatchmon.local',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $exists = DB::table('users')->where('email', 'admin@dispatchmon.local')->exists();
+        if (!$exists) {
+            DB::table('users')->insert([
+                'name' => 'Admin',
+                'email' => 'admin@dispatchmon.local',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     public function down(): void
