@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: dispatcharr-backend
+    container_name: dispatchmon-backend
     ports:
       - "8000:8000"
     environment:
@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: dispatcharr-frontend
+    container_name: dispatchmon-frontend
     ports:
       - "3000:3000"
     depends_on:
