@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { ViewerTimeline, TopChannelsChart, TopClientsChart, WeeklyConnections } from './components/Charts'
 
 const API = '/api'
 
@@ -60,6 +61,10 @@ export default function App() {
     const [clientStats, setClientStats] = useState(null)
     const [m3u, setM3u] = useState([])
     const [loading, setLoading] = useState(true)
+    const [hourlyTimeline, setHourlyTimeline] = useState([])
+    const [weeklyTimeline, setWeeklyTimeline] = useState([])
+    const [topChannels, setTopChannels] = useState([])
+    const [topClients, setTopClients] = useState([])
     const [activeTab, setActiveTab] = useState('clients')
     const [search, setSearch] = useState('')
     const [settings, setSettings] = useState({})
@@ -76,7 +81,7 @@ export default function App() {
 
     const fetchData = useCallback(async () => {
         try {
-            const [sumRes, chRes, evRes, typeRes, kcRes, acRes, csRes, m3uRes, settingsRes, backupsRes, versionRes] = await Promise.allSettled([
+            const [sumRes, chRes, evRes, typeRes, kcRes, acRes, csRes, m3uRes, settingsRes, backupsRes, versionRes, tlRes, twRes, tcRes, tclRes] = await Promise.allSettled([
                 fetch(`${API}/stats/summary`).then(r => r.json()),
                 fetch(`${API}/stats/channels`).then(r => r.json()),
                 fetch(`${API}/stats/events`).then(r => r.json()),
@@ -88,6 +93,10 @@ export default function App() {
                 fetch(`${API}/settings`).then(r => r.json()),
                 fetch(`${API}/backups`).then(r => r.json()),
                 fetch(`${API}/version`).then(r => r.json()),
+                fetch(`${API}/stats/timeline/hourly`).then(r => r.json()),
+                fetch(`${API}/stats/timeline/weekly`).then(r => r.json()),
+                fetch(`${API}/stats/top/channels`).then(r => r.json()),
+                fetch(`${API}/stats/top/clients`).then(r => r.json()),
             ])
 
             if (sumRes.status === 'fulfilled') setSummary(sumRes.value)
@@ -101,6 +110,10 @@ export default function App() {
             if (settingsRes.status === 'fulfilled') setSettings(settingsRes.value)
             if (backupsRes.status === 'fulfilled') setBackups(backupsRes.value)
             if (versionRes.status === 'fulfilled') setVersion(versionRes.value)
+            if (tlRes.status === 'fulfilled') setHourlyTimeline(tlRes.value)
+            if (twRes.status === 'fulfilled') setWeeklyTimeline(twRes.value)
+            if (tcRes.status === 'fulfilled') setTopChannels(tcRes.value)
+            if (tclRes.status === 'fulfilled') setTopClients(tclRes.value)
         } catch (e) {
             console.error('Fetch error:', e)
         } finally {
@@ -264,6 +277,44 @@ export default function App() {
                             <div className="lbl">Événements (24h)</div>
                             <div className="val" style={{ color: 'var(--orange)' }}>{summary.events_24h}</div>
                             <div className="sub">{summary.total_events} total</div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Charts */}
+                {hourlyTimeline.length > 0 && (
+                    <div className="sec" style={{ marginBottom: 24 }}>
+                        <div className="sec-hdr"><h2>📈 Viewers (24h)</h2></div>
+                        <div style={{ padding: 16, height: 250 }}>
+                            <ViewerTimeline data={hourlyTimeline} />
+                        </div>
+                    </div>
+                )}
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
+                    {topChannels.length > 0 && (
+                        <div className="sec">
+                            <div className="sec-hdr"><h2>🏆 Top Chaînes (7j)</h2></div>
+                            <div style={{ padding: 16, height: 280 }}>
+                                <TopChannelsChart data={topChannels} />
+                            </div>
+                        </div>
+                    )}
+                    {topClients.length > 0 && (
+                        <div className="sec">
+                            <div className="sec-hdr"><h2>👤 Top Clients</h2></div>
+                            <div style={{ padding: 16, height: 280 }}>
+                                <TopClientsChart data={topClients} />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {weeklyTimeline.length > 0 && (
+                    <div className="sec" style={{ marginBottom: 24 }}>
+                        <div className="sec-hdr"><h2>📊 Connexions (7 jours)</h2></div>
+                        <div style={{ padding: 16, height: 250 }}>
+                            <WeeklyConnections data={weeklyTimeline} />
                         </div>
                     </div>
                 )}
