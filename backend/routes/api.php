@@ -6,6 +6,7 @@ use App\Http\Controllers\StatsController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\VersionController;
 
 // Webhook endpoint (no auth needed - Dispatcharr calls this)
 Route::post('/webhook/dispatcharr', [WebhookController::class, 'handle']);
@@ -47,3 +48,6 @@ Route::prefix('backups')->group(function () {
     Route::get('/{name}/download', [BackupController::class, 'download']);
     Route::delete('/{name}', [BackupController::class, 'delete']);
 });
+
+// Version API
+Route::get('/version', [VersionController::class, 'index']);

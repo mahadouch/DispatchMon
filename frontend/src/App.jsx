@@ -67,10 +67,11 @@ export default function App() {
     const [telegramSaving, setTelegramSaving] = useState(false)
     const [backups, setBackups] = useState([])
     const [settingsTab, setSettingsTab] = useState('telegram')
+    const [version, setVersion] = useState(null)
 
     const fetchData = useCallback(async () => {
         try {
-            const [sumRes, chRes, evRes, typeRes, kcRes, acRes, csRes, m3uRes, settingsRes, backupsRes] = await Promise.allSettled([
+            const [sumRes, chRes, evRes, typeRes, kcRes, acRes, csRes, m3uRes, settingsRes, backupsRes, versionRes] = await Promise.allSettled([
                 fetch(`${API}/stats/summary`).then(r => r.json()),
                 fetch(`${API}/stats/channels`).then(r => r.json()),
                 fetch(`${API}/stats/events`).then(r => r.json()),
@@ -81,6 +82,7 @@ export default function App() {
                 fetch(`${API}/stats/m3u`).then(r => r.json()),
                 fetch(`${API}/settings`).then(r => r.json()),
                 fetch(`${API}/backups`).then(r => r.json()),
+                fetch(`${API}/version`).then(r => r.json()),
             ])
 
             if (sumRes.status === 'fulfilled') setSummary(sumRes.value)
@@ -93,6 +95,7 @@ export default function App() {
             if (m3uRes.status === 'fulfilled') setM3u(m3uRes.value)
             if (settingsRes.status === 'fulfilled') setSettings(settingsRes.value)
             if (backupsRes.status === 'fulfilled') setBackups(backupsRes.value)
+            if (versionRes.status === 'fulfilled') setVersion(versionRes.value)
         } catch (e) {
             console.error('Fetch error:', e)
         } finally {
@@ -703,7 +706,7 @@ export default function App() {
                                         }}>
                                             <div>
                                                 <div style={{ fontSize: 11, color: 'var(--t3)', marginBottom: 2 }}>Version</div>
-                                                <div style={{ fontSize: 14, fontWeight: 600 }}>1.0.0</div>
+                                                <div style={{ fontSize: 14, fontWeight: 600 }}>{version?.version || 'dev'}</div>
                                             </div>
                                             <div>
                                                 <div style={{ fontSize: 11, color: 'var(--t3)', marginBottom: 2 }}>Stack</div>

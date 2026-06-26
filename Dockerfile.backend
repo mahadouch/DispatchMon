@@ -23,6 +23,7 @@ COPY backend/database /var/www/html/database
 COPY backend/routes /var/www/html/routes
 COPY backend/config /var/www/html/config
 COPY backend/bootstrap/app.php /var/www/html/bootstrap/app.php
+COPY VERSION /var/www/html/VERSION
 
 # Storage permissions
 RUN chmod -R 777 storage bootstrap/cache
