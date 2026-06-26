@@ -419,7 +419,7 @@ export default function App() {
                                     <div style={{ marginBottom: 12 }}>
                                         <label style={{ display: 'block', fontSize: 12, color: 'var(--t3)', marginBottom: 4 }}>Bot Token</label>
                                         <input
-                                            type="text"
+                                            type="password"
                                             value={settings.telegram_bot_token || ''}
                                             onChange={e => setSettings(s => ({ ...s, telegram_bot_token: e.target.value }))}
                                             placeholder="123456:ABC-DEF..."
