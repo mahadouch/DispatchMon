@@ -769,6 +769,7 @@ export default function App() {
                                 {[
                                     { id: 'general', label: '🔧 Général' },
                                     { id: 'telegram', label: '📱 Telegram' },
+                                    { id: 'webhooks', label: '🔗 Webhooks' },
                                     { id: 'backups', label: '💾 Sauvegardes' },
                                     { id: 'about', label: 'ℹ️ À propos' },
                                 ].map(tab => (
@@ -982,6 +983,111 @@ export default function App() {
                                     {telegramTest && (
                                         <div style={{
                                             marginTop: 12, padding: '8px 14px', borderRadius: 6, fontSize: 13,
+                                            background: telegramTest.ok ? 'rgba(63,185,80,0.1)' : 'rgba(248,81,73,0.1)',
+                                            color: telegramTest.ok ? 'var(--green)' : 'var(--red)'
+                                        }}>
+                                            {telegramTest.msg}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Backups Tab */}
+                            {settingsTab === 'webhooks' && (
+                                <div style={{ padding: 20 }}>
+                                    <h3 style={{ fontSize: 15, marginBottom: 16, color: 'var(--t1)' }}>
+                                        🔗 Webhooks personnalisés
+                                    </h3>
+
+                                    <div style={{
+                                        background: 'var(--bg2)', border: '1px solid var(--border)',
+                                        borderRadius: 8, padding: 16, marginBottom: 16
+                                    }}>
+                                        <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 12 }}>
+                                            Envoyez des notifications vers Discord, Slack ou tout service webhook.
+                                        </p>
+
+                                        <div style={{ marginBottom: 12 }}>
+                                            <label style={{ display: 'block', fontSize: 12, color: 'var(--t3)', marginBottom: 4 }}>
+                                                🔮 Discord Webhook URL
+                                            </label>
+                                            <input
+                                                type="url"
+                                                value={settings.discord_webhook || ''}
+                                                onChange={e => setSettings(s => ({...s, discord_webhook: e.target.value}))}
+                                                placeholder="https://discord.com/api/webhooks/..."
+                                                style={{
+                                                    width: '100%', padding: '8px 12px', borderRadius: 6,
+                                                    border: '1px solid var(--border)', background: 'var(--bg1)',
+                                                    color: 'var(--t1)', fontSize: 13, fontFamily: 'monospace'
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div style={{ marginBottom: 12 }}>
+                                            <label style={{ display: 'block', fontSize: 12, color: 'var(--t3)', marginBottom: 4 }}>
+                                                💬 Slack Webhook URL
+                                            </label>
+                                            <input
+                                                type="url"
+                                                value={settings.slack_webhook || ''}
+                                                onChange={e => setSettings(s => ({...s, slack_webhook: e.target.value}))}
+                                                placeholder="https://hooks.slack.com/services/..."
+                                                style={{
+                                                    width: '100%', padding: '8px 12px', borderRadius: 6,
+                                                    border: '1px solid var(--border)', background: 'var(--bg1)',
+                                                    color: 'var(--t1)', fontSize: 13, fontFamily: 'monospace'
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div style={{ marginBottom: 12 }}>
+                                            <label style={{ display: 'block', fontSize: 12, color: 'var(--t3)', marginBottom: 4 }}>
+                                                🌐 Custom Webhook URL
+                                            </label>
+                                            <input
+                                                type="url"
+                                                value={settings.custom_webhook || ''}
+                                                onChange={e => setSettings(s => ({...s, custom_webhook: e.target.value}))}
+                                                placeholder="https://your-api.com/webhook"
+                                                style={{
+                                                    width: '100%', padding: '8px 12px', borderRadius: 6,
+                                                    border: '1px solid var(--border)', background: 'var(--bg1)',
+                                                    color: 'var(--t1)', fontSize: 13, fontFamily: 'monospace'
+                                                }}
+                                            />
+                                        </div>
+
+                                        <button
+                                            onClick={async () => {
+                                                setTelegramSaving(true)
+                                                try {
+                                                    await fetch(`${API}/settings`, {
+                                                        method: 'PUT',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify(settings),
+                                                    })
+                                                    setTelegramTest({ ok: true, msg: '✅ Webhooks sauvegardés' })
+                                                } catch (e) {
+                                                    setTelegramTest({ ok: false, msg: '❌ Erreur' })
+                                                } finally {
+                                                    setTelegramSaving(false)
+                                                    setTimeout(() => setTelegramTest(null), 3000)
+                                                }
+                                            }}
+                                            style={{
+                                                background: 'var(--blue)', color: '#fff', border: 'none',
+                                                padding: '8px 18px', borderRadius: 6, cursor: 'pointer',
+                                                fontSize: 13, fontWeight: 600, marginTop: 8
+                                            }}
+                                        >
+                                            💾 Sauvegarder
+                                        </button>
+                                    </div>
+
+                                    {telegramTest && (
+                                        <div style={{
+                                            padding: '8px 14px', borderRadius: 6, fontSize: 13,
                                             background: telegramTest.ok ? 'rgba(63,185,80,0.1)' : 'rgba(248,81,73,0.1)',
                                             color: telegramTest.ok ? 'var(--green)' : 'var(--red)'
                                         }}>
