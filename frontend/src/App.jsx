@@ -384,6 +384,7 @@ export default function App() {
                                 {[
                                     { id: 'telegram', label: '📱 Telegram' },
                                     { id: 'backups', label: '💾 Sauvegardes' },
+                                    { id: 'about', label: 'ℹ️ À propos' },
                                 ].map(tab => (
                                     <div key={tab.id} onClick={() => setSettingsTab(tab.id)} style={{
                                         padding: '10px 18px', fontSize: 13, cursor: 'pointer',
@@ -674,6 +675,96 @@ export default function App() {
                                             </table>
                                         </div>
                                     )}
+                                </div>
+                            )}
+
+                            {/* About Tab */}
+                            {settingsTab === 'about' && (
+                                <div style={{ padding: 20 }}>
+                                    <h3 style={{ fontSize: 15, marginBottom: 16, color: 'var(--t1)' }}>
+                                        ℹ️ À propos
+                                    </h3>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                        {/* Logo & Name */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                            <span style={{ fontSize: 48 }}>📊</span>
+                                            <div>
+                                                <h2 style={{ margin: 0, fontSize: 22, color: 'var(--t1)' }}>DispatchMon</h2>
+                                                <p style={{ margin: 0, fontSize: 13, color: 'var(--t3)' }}>Dashboard temps réel pour Dispatcharr</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Info Grid */}
+                                        <div style={{
+                                            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12,
+                                            background: 'var(--bg2)', border: '1px solid var(--border)',
+                                            borderRadius: 8, padding: 16
+                                        }}>
+                                            <div>
+                                                <div style={{ fontSize: 11, color: 'var(--t3)', marginBottom: 2 }}>Version</div>
+                                                <div style={{ fontSize: 14, fontWeight: 600 }}>1.0.0</div>
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: 11, color: 'var(--t3)', marginBottom: 2 }}>Stack</div>
+                                                <div style={{ fontSize: 14, fontWeight: 600 }}>React + Laravel</div>
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: 11, color: 'var(--t3)', marginBottom: 2 }}>Base de données</div>
+                                                <div style={{ fontSize: 14, fontWeight: 600 }}>SQLite</div>
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: 11, color: 'var(--t3)', marginBottom: 2 }}>Notifications</div>
+                                                <div style={{ fontSize: 14, fontWeight: 600 }}>Telegram Bot API</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Features */}
+                                        <div style={{
+                                            background: 'var(--bg2)', border: '1px solid var(--border)',
+                                            borderRadius: 8, padding: 16
+                                        }}>
+                                            <h4 style={{ margin: '0 0 8px 0', fontSize: 13, color: 'var(--t1)' }}>Fonctionnalités</h4>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                                {[
+                                                    '👥 Gestion clients',
+                                                    '🟢 Clients actifs',
+                                                    '📺 Monitoring chaînes',
+                                                    '📝 Historique événements',
+                                                    '📱 Notifications Telegram',
+                                                    '💾 Sauvegardes/Restore',
+                                                    '🌐 Géolocalisation IP',
+                                                    '🔄 Auto-refresh 10s',
+                                                ].map(f => (
+                                                    <span key={f} style={{
+                                                        background: 'var(--bg1)', border: '1px solid var(--border)',
+                                                        padding: '4px 10px', borderRadius: 4, fontSize: 12, color: 'var(--t2)'
+                                                    }}>{f}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Links */}
+                                        <div style={{ display: 'flex', gap: 12 }}>
+                                            <a
+                                                href="https://github.com/mahadouch/DispatchMon"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    background: 'var(--bg2)', border: '1px solid var(--border)',
+                                                    padding: '8px 16px', borderRadius: 6, fontSize: 13,
+                                                    color: 'var(--t2)', textDecoration: 'none'
+                                                }}
+                                            >
+                                                🐙 GitHub
+                                            </a>
+                                        </div>
+
+                                        {/* Credits */}
+                                        <div style={{ fontSize: 11, color: 'var(--t3)', borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+                                            Développé par <strong>mahadouch</strong> — Conçu pour <strong>Dispatcharr</strong> IPTV Server
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
