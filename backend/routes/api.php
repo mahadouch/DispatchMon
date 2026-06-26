@@ -10,7 +10,7 @@ use App\Http\Controllers\VersionController;
 use App\Http\Controllers\UpdateController;
 
 // Webhook endpoint (no auth needed - Dispatcharr calls this)
-Route::post('/webhook/dispatchmoon', [WebhookController::class, 'handle']);
+Route::post('/webhook/dispatcharr', [WebhookController::class, 'handle']);
 
 // Stats API
 Route::prefix('stats')->group(function () {

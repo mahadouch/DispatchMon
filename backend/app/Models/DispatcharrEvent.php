@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DispatcharrEvent extends Model
 {
+    protected $table = 'dispatcharr_events';
     protected $fillable = [
         'event_type', 'channel_name', 'stream_name', 'stream_url',
         'provider_name', 'profile_used', 'client_ip', 'client_id',
@@ -14,12 +15,12 @@ class DispatcharrEvent extends Model
         'reason', 'source_name', 'programs', 'channels_count',
         'account_name', 'streams_created', 'streams_updated',
         'streams_deleted', 'content_name', 'content_uuid',
-        'raw_payload', 'dispatchmoon_timestamp',
+        'raw_payload', 'dispatcharr_timestamp',
     ];
 
     protected $casts = [
         'raw_payload' => 'array',
-        'dispatchmoon_timestamp' => 'datetime',
+        'dispatcharr_timestamp' => 'datetime',
         'total_bytes' => 'integer',
         'bytes_sent' => 'integer',
     ];

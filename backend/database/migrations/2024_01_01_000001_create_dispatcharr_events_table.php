@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('dispatchmoon_events', function (Blueprint $table) {
+        Schema::create('dispatcharr_events', function (Blueprint $table) {
             $table->id();
             $table->string('event_type')->index();
             $table->string('channel_name')->nullable();
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('content_name')->nullable();
             $table->string('content_uuid')->nullable();
             $table->json('raw_payload')->nullable();
-            $table->timestamp('dispatchmoon_timestamp')->nullable();
+            $table->timestamp('dispatcharr_timestamp')->nullable();
             $table->timestamps();
 
             $table->index(['event_type', 'created_at']);
@@ -47,6 +47,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('dispatchmoon_events');
+        Schema::dropIfExists('dispatcharr_events');
     }
 };

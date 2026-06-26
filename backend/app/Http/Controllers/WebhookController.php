@@ -14,7 +14,7 @@ class WebhookController extends Controller
 {
     /**
      * Recevoir les webhooks de Dispatcharr
-     * POST /api/webhook/dispatchmoon
+     * POST /api/webhook/dispatcharr
      */
     public function handle(Request $request): JsonResponse
     {
@@ -50,7 +50,7 @@ class WebhookController extends Controller
             'content_name' => $payload['content_name'] ?? null,
             'content_uuid' => $payload['content_uuid'] ?? null,
             'raw_payload' => $payload,
-            'dispatchmoon_timestamp' => $payload['timestamp'] ?? now(),
+            'dispatcharr_timestamp' => $payload['timestamp'] ?? now(),
         ]);
 
         // Traiter selon le type d'événement
