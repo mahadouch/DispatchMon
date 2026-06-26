@@ -155,64 +155,23 @@ Dans votre serveur Dispatcharr, configurez l'intégration webhook :
 
 ## 📋 Templates Webhook Dispatcharr
 
-Voici les payloads envoyés par Dispatcharr via la Connect Integration. Copiez-collez ces exemples pour tester votre endpoint.
-
-### 🔌 client_connect
-
-```json
-{
-  "event": "client_connect",
-  "channel_name": "beIN Sports 1",
-  "stream_name": "beinsports1-hd",
-  "stream_url": "http://source.example.com/live/stream1",
-  "client_ip": "192.168.1.100",
-  "client_id": "abc123-def456",
-  "user_agent": "VLC/3.0.21 LibVLC/3.0.21",
-  "username": "user123",
-  "timestamp": "2025-06-26T10:30:00Z"
-}
-```
-
-**Champs traités :**
-| Champ | Type | Description |
-|-------|------|-------------|
-| `event` | string | Type d'événement (`client_connect`) |
-| `channel_name` | string | Nom de la chaîne regardée |
-| `stream_name` | string | Nom du stream |
-| `client_ip` | string | IP du client |
-| `client_id` | string | ID unique de la session client |
-| `user_agent` | string | User-Agent du lecteur |
-| `username` | string | Nom d'utilisateur (si authentifié) |
-
----
-
-### 🔴 client_disconnect
-
-```json
-{
-  "event": "client_disconnect",
-  "channel_name": "beIN Sports 1",
-  "client_ip": "192.168.1.100",
-  "client_id": "abc123-def456",
-  "username": "user123",
-  "duration": 3600.5,
-  "bytes_sent": 2147483648,
-  "reason": "client_closed",
-  "timestamp": "2025-06-26T11:30:00Z"
-}
-```
-
-**Champs traités :**
-| Champ | Type | Description |
-|-------|------|-------------|
-| `duration` | float | Durée de la session en secondes |
-| `bytes_sent` | int | Volume total envoyé en octets |
-| `reason` | string | Raison de la déconnexion |
-
----
+Voici les templates payload exacts configurés dans l'intégration Connect de Dispatcharr. Chaque événement utilise la syntaxe Jinja2 avec `escapejs` et `default`.
 
 ### ▶️ channel_start
 
+**Payload envoyé :**
+```json
+{
+  "event": "channel_start",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "stream_name": "{{ stream_name|default:\"-\"|escapejs }}",
+  "stream_url": "{{ stream_url|default:\"-\"|escapejs }}",
+  "provider_name": "{{ provider_name|default:\"-\"|escapejs }}",
+  "profile_used": "{{ profile_used|default:\"-\"|escapejs }}"
+}
+```
+
+**Exemple réel :**
 ```json
 {
   "event": "channel_start",
@@ -220,144 +179,395 @@ Voici les payloads envoyés par Dispatcharr via la Connect Integration. Copiez-c
   "stream_name": "beinsports1-hd",
   "stream_url": "http://source.example.com/live/stream1",
   "provider_name": "M3U Account 1",
-  "profile_used": "default",
-  "source_name": "source-1",
-  "timestamp": "2025-06-26T10:00:00Z"
+  "profile_used": "default"
 }
 ```
-
-**Champs traités :**
-| Champ | Type | Description |
-|-------|------|-------------|
-| `provider_name` | string | Nom du compte M3U/fournisseur |
-| `profile_used` | string | Profil de transcodage utilisé |
-| `source_name` | string | Nom de la source |
 
 ---
 
 ### ⏹️ channel_stop
 
+**Payload envoyé :**
+```json
+{
+  "event": "channel_stop",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "runtime": {{ runtime|default:"0" }},
+  "total_bytes": {{ total_bytes|default:"0" }}
+}
+```
+
+**Exemple réel :**
 ```json
 {
   "event": "channel_stop",
   "channel_name": "beIN Sports 1",
   "runtime": 7200.3,
-  "total_bytes": 4294967296,
-  "reason": "stream_ended",
-  "timestamp": "2025-06-26T12:00:00Z"
+  "total_bytes": 4294967296
 }
 ```
-
-**Champs traités :**
-| Champ | Type | Description |
-|-------|------|-------------|
-| `runtime` | float | Durée du stream en secondes |
-| `total_bytes` | int | Volume total transféré en octets |
-| `reason` | string | Raison de l'arrêt |
 
 ---
 
-### ⚠️ stream_error
+### 🔌 client_connect
 
+**Payload envoyé :**
 ```json
 {
-  "event": "stream_error",
-  "channel_name": "beIN Sports 1",
-  "stream_name": "beinsports1-hd",
-  "error_type": "connection_timeout",
-  "error_message": "Could not connect to upstream source after 30s",
-  "source_name": "source-1",
-  "provider_name": "M3U Account 1",
-  "timestamp": "2025-06-26T10:05:00Z"
+  "event": "client_connect",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "client_id": "{{ client_id|default:\"-\"|escapejs }}",
+  "user_agent": "{{ user_agent|default:\"-\"|escapejs }}",
+  "username": "{{ username|default:\"-\"|escapejs }}"
 }
 ```
 
-**Champs traités :**
-| Champ | Type | Description |
-|-------|------|-------------|
-| `error_type` | string | Type d'erreur |
-| `error_message` | string | Message d'erreur détaillé |
+**Exemple réel :**
+```json
+{
+  "event": "client_connect",
+  "channel_name": "beIN Sports 1",
+  "client_ip": "192.168.1.100",
+  "client_id": "abc123-def456",
+  "user_agent": "VLC/3.0.21 LibVLC/3.0.21",
+  "username": "user123"
+}
+```
+
+---
+
+### 🔴 client_disconnect
+
+**Payload envoyé :**
+```json
+{
+  "event": "client_disconnect",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "client_id": "{{ client_id|default:\"-\"|escapejs }}",
+  "duration": {{ duration|default:"0" }},
+  "bytes_sent": {{ bytes_sent|default:"0" }},
+  "username": "{{ username|default:\"-\"|escapejs }}"
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "client_disconnect",
+  "channel_name": "beIN Sports 1",
+  "client_ip": "192.168.1.100",
+  "client_id": "abc123-def456",
+  "duration": 3600.5,
+  "bytes_sent": 2147483648,
+  "username": "user123"
+}
+```
+
+---
+
+### ⚠️ channel_error
+
+**Payload envoyé :**
+```json
+{
+  "event": "channel_error",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "error_type": "{{ error_type|default:\"-\"|escapejs }}",
+  "error_message": "{{ error_message|default:\"-\"|escapejs }}",
+  "attempts": {{ attempts|default:"0" }}
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "channel_error",
+  "channel_name": "beIN Sports 1",
+  "error_type": "connection_timeout",
+  "error_message": "Could not connect to upstream source after 30s",
+  "attempts": 3
+}
+```
+
+---
+
+### 🔄 channel_reconnect
+
+**Payload envoyé :**
+```json
+{
+  "event": "channel_reconnect",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "attempt": {{ attempt|default:"0" }},
+  "max_attempts": {{ max_attempts|default:"0" }}
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "channel_reconnect",
+  "channel_name": "beIN Sports 1",
+  "attempt": 2,
+  "max_attempts": 5
+}
+```
+
+---
+
+### ⚡ channel_failover
+
+**Payload envoyé :**
+```json
+{
+  "event": "channel_failover",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "reason": "{{ reason|default:\"-\"|escapejs }}",
+  "duration": {{ duration|default:"0" }}
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "channel_failover",
+  "channel_name": "beIN Sports 1",
+  "reason": "source_unavailable",
+  "duration": 15.2
+}
+```
+
+---
+
+### 🔀 stream_switch
+
+**Payload envoyé :**
+```json
+{
+  "event": "stream_switch",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "new_url": "{{ new_url|default:\"-\"|escapejs }}",
+  "stream_id": {{ stream_id|default:"0" }}
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "stream_switch",
+  "channel_name": "beIN Sports 1",
+  "new_url": "http://source2.example.com/live/stream1",
+  "stream_id": 42
+}
+```
 
 ---
 
 ### 📡 m3u_refresh
 
+**Payload envoyé :**
+```json
+{
+  "event": "m3u_refresh",
+  "account_name": "{{ account_name|default:\"-\"|escapejs }}",
+  "elapsed_time": {{ elapsed_time|default:"0" }},
+  "streams_created": {{ streams_created|default:"0" }},
+  "streams_updated": {{ streams_updated|default:"0" }},
+  "streams_deleted": {{ streams_deleted|default:"0" }},
+  "total_processed": {{ total_processed|default:"0" }}
+}
+```
+
+**Exemple réel :**
 ```json
 {
   "event": "m3u_refresh",
   "account_name": "M3U Account 1",
-  "channels_count": 1058,
+  "elapsed_time": 12.5,
   "streams_created": 12,
   "streams_updated": 5,
   "streams_deleted": 2,
-  "programs": 850,
-  "timestamp": "2025-06-26T06:00:00Z"
+  "total_processed": 1058
 }
 ```
-
-**Champs traités :**
-| Champ | Type | Description |
-|-------|------|-------------|
-| `account_name` | string | Nom du compte M3U |
-| `channels_count` | int | Nombre total de chaînes |
-| `streams_created` | int | Nouveaux streams créés |
-| `streams_updated` | int | Streams mis à jour |
-| `streams_deleted` | int | Streams supprimés |
-| `programs` | int | Nombre de programmes EPG |
 
 ---
 
-### 🔑 login_success / login_failed
+### 📺 epg_refresh
 
+**Payload envoyé :**
 ```json
 {
-  "event": "login_success",
-  "username": "user123",
-  "client_ip": "192.168.1.100",
-  "user_agent": "VLC/3.0.21",
-  "timestamp": "2025-06-26T10:30:00Z"
+  "event": "epg_refresh",
+  "source_name": "{{ source_name|default:\"-\"|escapejs }}",
+  "programs": {{ programs|default:"0" }},
+  "channels": {{ channels|default:"0" }},
+  "skipped_programs": {{ skipped_programs|default:"0" }},
+  "unmapped_channels": {{ unmapped_channels|default:"0" }}
 }
 ```
 
+**Exemple réel :**
+```json
+{
+  "event": "epg_refresh",
+  "source_name": "XMLTV Source",
+  "programs": 850,
+  "channels": 1058,
+  "skipped_programs": 12,
+  "unmapped_channels": 3
+}
+```
+
+---
+
+### 🚫 login_failed
+
+**Payload envoyé :**
 ```json
 {
   "event": "login_failed",
-  "username": "hacker99",
-  "client_ip": "45.33.100.5",
-  "user_agent": "curl/7.88.1",
-  "error_message": "Invalid credentials",
-  "timestamp": "2025-06-26T10:31:00Z"
+  "user": "{{ user|default:\"-\"|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "reason": "{{ reason|default:\"-\"|escapejs }}"
 }
 ```
 
----
-
-### 🔀 stream_switch / channel_failover
-
+**Exemple réel :**
 ```json
 {
-  "event": "stream_switch",
-  "channel_name": "beIN Sports 1",
-  "stream_name": "beinsports1-hd",
-  "source_name": "source-2",
-  "reason": "source_unavailable",
-  "timestamp": "2025-06-26T10:15:00Z"
+  "event": "login_failed",
+  "user": "hacker99",
+  "client_ip": "45.33.100.5",
+  "reason": "Invalid credentials"
 }
 ```
 
 ---
 
-### 🎬 recording_start / recording_end
+### 🎬 recording_start
 
+**Payload envoyé :**
+```json
+{
+  "event": "recording_start",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "recording_id": {{ recording_id|default:"0" }}
+}
+```
+
+**Exemple réel :**
 ```json
 {
   "event": "recording_start",
   "channel_name": "beIN Sports 1",
-  "content_name": "Match_Ligue1_2025",
-  "content_uuid": "rec-uuid-12345",
-  "timestamp": "2025-06-26T20:00:00Z"
+  "recording_id": 1234
 }
 ```
+
+---
+
+### ⏹️ recording_end
+
+**Payload envoyé :**
+```json
+{
+  "event": "recording_end",
+  "channel_name": "{{ channel_name|escapejs }}",
+  "recording_id": {{ recording_id|default:"0" }},
+  "interrupted": {{ interrupted|default:"false" }},
+  "bytes_written": {{ bytes_written|default:"0" }}
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "recording_end",
+  "channel_name": "beIN Sports 1",
+  "recording_id": 1234,
+  "interrupted": false,
+  "bytes_written": 2147483648
+}
+```
+
+---
+
+### 🎬 vod_start
+
+**Payload envoyé :**
+```json
+{
+  "event": "vod_start",
+  "content_name": "{{ content_name|default:\"-\"|escapejs }}",
+  "content_uuid": "{{ content_uuid|default:\"-\"|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "username": "{{ username|default:\"-\"|escapejs }}"
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "vod_start",
+  "content_name": "Match_Ligue1_2025",
+  "content_uuid": "vod-uuid-12345",
+  "client_ip": "192.168.1.100",
+  "username": "user123"
+}
+```
+
+---
+
+### ⏹️ vod_stop
+
+**Payload envoyé :**
+```json
+{
+  "event": "vod_stop",
+  "content_name": "{{ content_name|default:\"-\"|escapejs }}",
+  "content_uuid": "{{ content_uuid|default:\"-\"|escapejs }}",
+  "client_ip": "{{ client_ip|default:\"-\"|escapejs }}",
+  "username": "{{ username|default:\"-\"|escapejs }}"
+}
+```
+
+**Exemple réel :**
+```json
+{
+  "event": "vod_stop",
+  "content_name": "Match_Ligue1_2025",
+  "content_uuid": "vod-uuid-12345",
+  "client_ip": "192.168.1.100",
+  "username": "user123"
+}
+```
+
+---
+
+### 📌 Résumé des événements
+
+| Événement | Champs principaux | Description |
+|-----------|-------------------|-------------|
+| `channel_start` | channel_name, stream_name, provider_name | Démarrage d'un stream |
+| `channel_stop` | channel_name, runtime, total_bytes | Arrêt d'un stream |
+| `client_connect` | channel_name, client_ip, client_id, username | Connexion client |
+| `client_disconnect` | channel_name, client_ip, duration, bytes_sent | Déconnexion client |
+| `channel_error` | channel_name, error_type, error_message | Erreur de stream |
+| `channel_reconnect` | channel_name, attempt, max_attempts | Tentative de reconnexion |
+| `channel_failover` | channel_name, reason, duration | Basculement source |
+| `stream_switch` | channel_name, new_url, stream_id | Changement de source |
+| `m3u_refresh` | account_name, streams_created/updated/deleted | Rafraîchissement M3U |
+| `epg_refresh` | source_name, programs, channels | Rafraîchissement EPG |
+| `login_failed` | user, client_ip, reason | Échec d'authentification |
+| `recording_start` | channel_name, recording_id | Début d'enregistrement |
+| `recording_end` | channel_name, recording_id, interrupted | Fin d'enregistrement |
+| `vod_start` | content_name, content_uuid, username | Début VOD |
+| `vod_stop` | content_name, content_uuid, username | Fin VOD |
+
+> 💡 **Note :** Les variables `{{ variable|default:\"-\"|escapejs }}` sont remplacées par Dispatcharr avant l'envoi. La valeur par défaut `"-"` est utilisée si la variable est vide.
 
 ---
 
