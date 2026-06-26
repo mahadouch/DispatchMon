@@ -66,6 +66,7 @@ export default function App() {
     const [telegramTest, setTelegramTest] = useState(null)
     const [telegramSaving, setTelegramSaving] = useState(false)
     const [backups, setBackups] = useState([])
+    const [settingsTab, setSettingsTab] = useState('telegram')
 
     const fetchData = useCallback(async () => {
         try {
@@ -377,9 +378,26 @@ export default function App() {
                     {activeTab === 'settings' && (
                         <div className="sec" style={{ marginTop: 16 }}>
                             <div className="sec-hdr"><h2>⚙️ Paramètres</h2></div>
-                            <div style={{ padding: 20 }}>
-                                {/* Telegram Section */}
-                                <div style={{ marginBottom: 24 }}>
+
+                            {/* Settings Sub-Tabs */}
+                            <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg1)' }}>
+                                {[
+                                    { id: 'telegram', label: '📱 Telegram' },
+                                    { id: 'backups', label: '💾 Sauvegardes' },
+                                ].map(tab => (
+                                    <div key={tab.id} onClick={() => setSettingsTab(tab.id)} style={{
+                                        padding: '10px 18px', fontSize: 13, cursor: 'pointer',
+                                        color: settingsTab === tab.id ? 'var(--blue)' : 'var(--t2)',
+                                        borderBottom: settingsTab === tab.id ? '2px solid var(--blue)' : '2px solid transparent',
+                                    }}>
+                                        {tab.label}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Telegram Tab */}
+                            {settingsTab === 'telegram' && (
+                                <div style={{ padding: 20 }}>
                                     <h3 style={{ fontSize: 15, marginBottom: 12, color: 'var(--t1)' }}>
                                         📱 Notifications Telegram
                                     </h3>
@@ -528,124 +546,136 @@ export default function App() {
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Backup Section */}
-                            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20, marginTop: 20 }}>
-                                <h3 style={{ fontSize: 15, marginBottom: 12, color: 'var(--t1)' }}>
-                                    💾 Sauvegardes
-                                </h3>
+                            {/* Backups Tab */}
+                            {settingsTab === 'backups' && (
+                                <div style={{ padding: 20 }}>
+                                    <h3 style={{ fontSize: 15, marginBottom: 12, color: 'var(--t1)' }}>
+                                        💾 Sauvegardes de la base de données
+                                    </h3>
 
-                                {/* Create Backup Button */}
-                                <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                                    <button
-                                        onClick={async () => {
-                                            try {
-                                                const res = await fetch(`${API}/backups`, { method: 'POST' })
-                                                const data = await res.json()
-                                                if (data.status === 'ok') {
-                                                    setTelegramTest({ ok: true, msg: `✅ Backup créé : ${data.filename} (${data.size_human})` })
-                                                    fetchBackups()
-                                                } else {
-                                                    setTelegramTest({ ok: false, msg: `❌ ${data.error}` })
+                                    {/* Create Backup Button */}
+                                    <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    const res = await fetch(`${API}/backups`, { method: 'POST' })
+                                                    const data = await res.json()
+                                                    if (data.status === 'ok') {
+                                                        setTelegramTest({ ok: true, msg: `✅ Backup créé : ${data.filename} (${data.size_human})` })
+                                                        fetchBackups()
+                                                    } else {
+                                                        setTelegramTest({ ok: false, msg: `❌ ${data.error}` })
+                                                    }
+                                                } catch (e) {
+                                                    setTelegramTest({ ok: false, msg: '❌ Erreur de création' })
                                                 }
-                                            } catch (e) {
-                                                setTelegramTest({ ok: false, msg: '❌ Erreur de création' })
-                                            }
-                                            setTimeout(() => setTelegramTest(null), 3000)
-                                        }}
-                                        style={{
-                                            background: 'var(--blue)', color: '#fff', border: 'none',
-                                            padding: '8px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600
-                                        }}
-                                    >
-                                        💾 Créer un backup
-                                    </button>
-                                </div>
+                                                setTimeout(() => setTelegramTest(null), 3000)
+                                            }}
+                                            style={{
+                                                background: 'var(--blue)', color: '#fff', border: 'none',
+                                                padding: '8px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600
+                                            }}
+                                        >
+                                            💾 Créer un backup
+                                        </button>
+                                    </div>
 
-                                {/* Backups List */}
-                                {backups.length === 0 ? (
-                                    <div style={{ fontSize: 13, color: 'var(--t3)', padding: '12px 0' }}>
-                                        Aucune sauvegarde
-                                    </div>
-                                ) : (
-                                    <div style={{ maxHeight: 300, overflow: 'auto' }}>
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Nom</th>
-                                                    <th>Taille</th>
-                                                    <th>Date</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {backups.map(b => (
-                                                    <tr key={b.name}>
-                                                        <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{b.filename}</td>
-                                                        <td style={{ fontSize: 12 }}>{b.size_human}</td>
-                                                        <td style={{ fontSize: 12, color: 'var(--t3)' }}>{b.created_at}</td>
-                                                        <td>
-                                                            <div style={{ display: 'flex', gap: 6 }}>
-                                                                <button
-                                                                    onClick={async () => {
-                                                                        if (!confirm('Restaurer ce backup ? La base actuelle sera écrasée.')) return
-                                                                        try {
-                                                                            const res = await fetch(`${API}/backups/${b.name}/restore`, { method: 'POST' })
-                                                                            const data = await res.json()
-                                                                            if (data.status === 'ok') {
-                                                                                setTelegramTest({ ok: true, msg: `✅ ${data.message}` })
-                                                                            } else {
-                                                                                setTelegramTest({ ok: false, msg: `❌ ${data.error}` })
-                                                                            }
-                                                                        } catch (e) {
-                                                                            setTelegramTest({ ok: false, msg: '❌ Erreur de restauration' })
-                                                                        }
-                                                                        setTimeout(() => setTelegramTest(null), 3000)
-                                                                    }}
-                                                                    style={{
-                                                                        background: 'rgba(63,185,80,0.15)', color: 'var(--green)',
-                                                                        border: 'none', padding: '4px 10px', borderRadius: 4,
-                                                                        cursor: 'pointer', fontSize: 11
-                                                                    }}
-                                                                >
-                                                                    🔄 Restaurer
-                                                                </button>
-                                                                <a
-                                                                    href={`${API}/backups/${b.name}/download`}
-                                                                    style={{
-                                                                        background: 'rgba(59,130,246,0.15)', color: 'var(--blue)',
-                                                                        border: 'none', padding: '4px 10px', borderRadius: 4,
-                                                                        cursor: 'pointer', fontSize: 11, textDecoration: 'none'
-                                                                    }}
-                                                                >
-                                                                    📥 Télécharger
-                                                                </a>
-                                                                <button
-                                                                    onClick={async () => {
-                                                                        if (!confirm('Supprimer ce backup ?')) return
-                                                                        try {
-                                                                            await fetch(`${API}/backups/${b.name}`, { method: 'DELETE' })
-                                                                            fetchBackups()
-                                                                        } catch (e) {}
-                                                                    }}
-                                                                    style={{
-                                                                        background: 'rgba(248,81,73,0.15)', color: 'var(--red)',
-                                                                        border: 'none', padding: '4px 10px', borderRadius: 4,
-                                                                        cursor: 'pointer', fontSize: 11
-                                                                    }}
-                                                                >
-                                                                    🗑️
-                                                                </button>
-                                                            </div>
-                                                        </td>
+                                    {telegramTest && (
+                                        <div style={{
+                                            marginBottom: 12, padding: '8px 14px', borderRadius: 6, fontSize: 13,
+                                            background: telegramTest.ok ? 'rgba(63,185,80,0.1)' : 'rgba(248,81,73,0.1)',
+                                            color: telegramTest.ok ? 'var(--green)' : 'var(--red)'
+                                        }}>
+                                            {telegramTest.msg}
+                                        </div>
+                                    )}
+
+                                    {/* Backups List */}
+                                    {backups.length === 0 ? (
+                                        <div style={{ fontSize: 13, color: 'var(--t3)', padding: '12px 0' }}>
+                                            Aucune sauvegarde
+                                        </div>
+                                    ) : (
+                                        <div style={{ maxHeight: 400, overflow: 'auto' }}>
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nom</th>
+                                                        <th>Taille</th>
+                                                        <th>Date</th>
+                                                        <th>Actions</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
+                                                </thead>
+                                                <tbody>
+                                                    {backups.map(b => (
+                                                        <tr key={b.name}>
+                                                            <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{b.filename}</td>
+                                                            <td style={{ fontSize: 12 }}>{b.size_human}</td>
+                                                            <td style={{ fontSize: 12, color: 'var(--t3)' }}>{b.created_at}</td>
+                                                            <td>
+                                                                <div style={{ display: 'flex', gap: 6 }}>
+                                                                    <button
+                                                                        onClick={async () => {
+                                                                            if (!confirm('Restaurer ce backup ? La base actuelle sera écrasée.')) return
+                                                                            try {
+                                                                                const res = await fetch(`${API}/backups/${b.name}/restore`, { method: 'POST' })
+                                                                                const data = await res.json()
+                                                                                if (data.status === 'ok') {
+                                                                                    setTelegramTest({ ok: true, msg: `✅ ${data.message}` })
+                                                                                } else {
+                                                                                    setTelegramTest({ ok: false, msg: `❌ ${data.error}` })
+                                                                                }
+                                                                            } catch (e) {
+                                                                                setTelegramTest({ ok: false, msg: '❌ Erreur de restauration' })
+                                                                            }
+                                                                            setTimeout(() => setTelegramTest(null), 3000)
+                                                                        }}
+                                                                        style={{
+                                                                            background: 'rgba(63,185,80,0.15)', color: 'var(--green)',
+                                                                            border: 'none', padding: '4px 10px', borderRadius: 4,
+                                                                            cursor: 'pointer', fontSize: 11
+                                                                        }}
+                                                                    >
+                                                                        🔄 Restaurer
+                                                                    </button>
+                                                                    <a
+                                                                        href={`${API}/backups/${b.name}/download`}
+                                                                        style={{
+                                                                            background: 'rgba(59,130,246,0.15)', color: 'var(--blue)',
+                                                                            border: 'none', padding: '4px 10px', borderRadius: 4,
+                                                                            cursor: 'pointer', fontSize: 11, textDecoration: 'none'
+                                                                        }}
+                                                                    >
+                                                                        📥 Télécharger
+                                                                    </a>
+                                                                    <button
+                                                                        onClick={async () => {
+                                                                            if (!confirm('Supprimer ce backup ?')) return
+                                                                            try {
+                                                                                await fetch(`${API}/backups/${b.name}`, { method: 'DELETE' })
+                                                                                fetchBackups()
+                                                                            } catch (e) {}
+                                                                        }}
+                                                                        style={{
+                                                                            background: 'rgba(248,81,73,0.15)', color: 'var(--red)',
+                                                                            border: 'none', padding: '4px 10px', borderRadius: 4,
+                                                                            cursor: 'pointer', fontSize: 11
+                                                                        }}
+                                                                    >
+                                                                        🗑️
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
