@@ -421,8 +421,17 @@ export default function App() {
                             </div>
                             <div className="card">
                                 <div className="lbl">Mémoire</div>
-                                <div className="val" style={{ fontSize: 20, color: 'var(--purple)' }}>{systemInfo.memory?.used_human}</div>
-                                <div className="sub">peak: {systemInfo.memory?.peak ? (systemInfo.memory.peak / 1024 / 1024).toFixed(0) + ' MB' : '—'}</div>
+                                <div className="val" style={{ fontSize: 20, color: systemInfo.memory?.percent > 80 ? 'var(--red)' : 'var(--purple)' }}>
+                                    {systemInfo.memory?.percent}%
+                                </div>
+                                <div className="sub">{systemInfo.memory?.used_human} / {systemInfo.memory?.total_human}</div>
+                                <div style={{ height: 4, background: 'var(--bg2)', borderRadius: 2, marginTop: 6 }}>
+                                    <div style={{
+                                        height: '100%', borderRadius: 2,
+                                        width: `${systemInfo.memory?.percent}%`,
+                                        background: systemInfo.memory?.percent > 80 ? 'var(--red)' : 'var(--purple)'
+                                    }} />
+                                </div>
                             </div>
                             <div className="card">
                                 <div className="lbl">Versions</div>
