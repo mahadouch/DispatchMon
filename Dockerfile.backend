@@ -1,0 +1,40 @@
+FROM php:8.3-cli
+
+# Install system deps
+RUN apt-get update && apt-get install -y \
+    git curl zip unzip libpng-dev libjpeg-dev libfreetype6-dev \
+    libonig-dev libxml2-dev libsqlite3-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Create fresh Laravel project
+RUN composer create-project laravel/laravel . --prefer-dist --no-interaction \
+    && rm -rf .git
+
+# Copy our custom files
+COPY backend/app /var/www/html/app
+COPY backend/database /var/www/html/database
+COPY backend/routes /var/www/html/routes
+COPY backend/config /var/www/html/config
+
+# Create SQLite database
+RUN touch database/database.sqlite && chmod 777 database/database.sqlite
+
+# Storage permissions
+RUN chmod -R 777 storage bootstrap/cache
+
+# Set environment
+ENV APP_ENV=local
+ENV APP_DEBUG=true
+ENV DB_CONNECTION=sqlite
+ENV DB_DATABASE=/var/www/html/database/database.sqlite
+
+EXPOSE 8000
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

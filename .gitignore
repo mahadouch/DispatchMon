@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Database
+*.sqlite
+*.sqlite-journal
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Storage (Laravel)
+backend/storage/app/*
+backend/storage/framework/*
+backend/storage/logs/*
+!backend/storage/app/.gitkeep
+!backend/storage/framework/.gitkeep
+!backend/storage/logs/.gitkeep
+
+# Cache
+backend/bootstrap/cache/*
+!backend/bootstrap/cache/.gitkeep
