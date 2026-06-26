@@ -175,7 +175,7 @@ class WebhookController extends Controller
         // Utiliser ip-api.com pour les IPs publiques
         try {
             $response = \Illuminate\Support\Facades\Http::timeout(2)
-                ->get("http://ip-api.com/json/{$ip}", ['fields' => 'countryCode,country']);
+                ->get("http://ip-api.com/json/{$ip}", ['fields' => 'countryCode,country', 'lang' => 'fr']);
 
             if ($response->successful() && $response->json('status') === 'success') {
                 return [
