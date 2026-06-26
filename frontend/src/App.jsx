@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ViewerTimeline, TopChannelsChart, TopClientsChart, WeeklyConnections } from './components/Charts'
 import { ToastContainer, showToast } from './components/Toast'
+import Login from './components/Login'
 
 const API = '/api'
 
@@ -73,6 +74,7 @@ export default function App() {
     const [search, setSearch] = useState('')
     const [eventFilter, setEventFilter] = useState({ type: '', dateFrom: '', dateTo: '' })
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
+    const [user, setUser] = useState(null)
     const [settings, setSettings] = useState({})
     const [telegramTest, setTelegramTest] = useState(null)
     const [telegramSaving, setTelegramSaving] = useState(false)
@@ -167,6 +169,20 @@ export default function App() {
         localStorage.setItem('theme', theme)
     }, [theme])
 
+    // Check auth on mount
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (token) {
+            fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data) setUser(data)
+                    else localStorage.removeItem('token')
+                })
+                .catch(() => localStorage.removeItem('token'))
+        }
+    }, [])
+
     const fetchBackups = async () => {
         try {
             const res = await fetch(`${API}/backups`)
@@ -220,6 +236,10 @@ export default function App() {
         )
     }
 
+    if (!user) {
+        return <Login onLogin={setUser} />
+    }
+
     return (
         <>
             <ToastContainer />
@@ -238,6 +258,9 @@ export default function App() {
                     )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 12, color: 'var(--t3)' }}>
+                        👤 {user.name}
+                    </span>
                     <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} style={{
                         background: 'var(--bg2)', border: '1px solid var(--border)',
                         color: 'var(--t2)', padding: '6px 10px', borderRadius: 6,
@@ -250,6 +273,13 @@ export default function App() {
                         background: 'var(--bg2)', border: '1px solid var(--border)',
                         color: 'var(--t2)', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 13
                     }}>🔄</button>
+                    <button onClick={() => {
+                        localStorage.removeItem('token')
+                        setUser(null)
+                    }} style={{
+                        background: 'rgba(248,81,73,0.15)', border: '1px solid rgba(248,81,73,0.3)',
+                        color: 'var(--red)', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 13
+                    }}>⏻</button>
                 </div>
             </div>
 

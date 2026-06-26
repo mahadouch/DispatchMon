@@ -72,3 +72,11 @@ Route::prefix('export')->group(function () {
 
 // System API
 Route::get('/system', [\App\Http\Controllers\SystemController::class, 'index']);
+
+// Auth API
+Route::post('/auth/login', [\App\Http\Controllers\AuthController::class, 'login']);
+Route::post('/auth/register', [\App\Http\Controllers\AuthController::class, 'register']);
+Route::middleware(\App\Http\Middleware\AuthToken::class)->group(function () {
+    Route::get('/auth/me', [\App\Http\Controllers\AuthController::class, 'me']);
+    Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+});
