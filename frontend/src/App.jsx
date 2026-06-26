@@ -68,6 +68,7 @@ export default function App() {
     const [weeklyTimeline, setWeeklyTimeline] = useState([])
     const [topChannels, setTopChannels] = useState([])
     const [topClients, setTopClients] = useState([])
+    const [systemInfo, setSystemInfo] = useState(null)
     const [activeTab, setActiveTab] = useState('clients')
     const [search, setSearch] = useState('')
     const [eventFilter, setEventFilter] = useState({ type: '', dateFrom: '', dateTo: '' })
@@ -130,6 +131,12 @@ export default function App() {
             if (twRes.status === 'fulfilled') setWeeklyTimeline(twRes.value)
             if (tcRes.status === 'fulfilled') setTopChannels(tcRes.value)
             if (tclRes.status === 'fulfilled') setTopClients(tclRes.value)
+
+            // System info (separate call, less frequent)
+            try {
+                const sysRes = await fetch(`${API}/system`).then(r => r.json())
+                setSystemInfo(sysRes)
+            } catch (e) {}
         } catch (e) {
             console.error('Fetch error:', e)
         } finally {
@@ -350,6 +357,45 @@ export default function App() {
                         <div className="sec-hdr"><h2>📊 Connexions (7 jours)</h2></div>
                         <div style={{ padding: 16, height: 250 }}>
                             <WeeklyConnections data={weeklyTimeline} />
+                        </div>
+                    </div>
+                )}
+
+                {systemInfo && (
+                    <div className="sec" style={{ marginBottom: 24 }}>
+                        <div className="sec-hdr"><h2>🖥️ Système</h2></div>
+                        <div style={{ padding: 16, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+                            <div className="card">
+                                <div className="lbl">CPU Load</div>
+                                <div className="val" style={{ fontSize: 20, color: 'var(--blue)' }}>{systemInfo.cpu?.load_1m}</div>
+                                <div className="sub">1m / {systemInfo.cpu?.load_5m} / {systemInfo.cpu?.load_15m}</div>
+                            </div>
+                            <div className="card">
+                                <div className="lbl">Disque</div>
+                                <div className="val" style={{ fontSize: 20, color: systemInfo.disk?.percent > 80 ? 'var(--red)' : 'var(--green)' }}>
+                                    {systemInfo.disk?.percent}%
+                                </div>
+                                <div className="sub">{systemInfo.disk?.used_human} / {systemInfo.disk?.total_human}</div>
+                                <div style={{ height: 4, background: 'var(--bg2)', borderRadius: 2, marginTop: 6 }}>
+                                    <div style={{
+                                        height: '100%', borderRadius: 2,
+                                        width: `${systemInfo.disk?.percent}%`,
+                                        background: systemInfo.disk?.percent > 80 ? 'var(--red)' : 'var(--blue)'
+                                    }} />
+                                </div>
+                            </div>
+                            <div className="card">
+                                <div className="lbl">Mémoire</div>
+                                <div className="val" style={{ fontSize: 20, color: 'var(--purple)' }}>{systemInfo.memory?.used_human}</div>
+                                <div className="sub">peak: {systemInfo.memory?.peak ? (systemInfo.memory.peak / 1024 / 1024).toFixed(0) + ' MB' : '—'}</div>
+                            </div>
+                            <div className="card">
+                                <div className="lbl">Versions</div>
+                                <div style={{ fontSize: 13, marginTop: 4 }}>
+                                    <div>PHP <strong>{systemInfo.php}</strong></div>
+                                    <div>Laravel <strong>{systemInfo.laravel}</strong></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

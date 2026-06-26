@@ -69,3 +69,6 @@ Route::prefix('export')->group(function () {
     Route::get('/clients/json', [\App\Http\Controllers\ExportController::class, 'clientsJson']);
     Route::get('/events/json', [\App\Http\Controllers\ExportController::class, 'eventsJson']);
 });
+
+// System API
+Route::get('/system', [\App\Http\Controllers\SystemController::class, 'index']);
