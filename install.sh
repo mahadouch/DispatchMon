@@ -89,6 +89,36 @@ docker_build() {
     docker compose exec -T backend php artisan migrate --force 2>/dev/null || true
 }
 
+# Créer le service systemd
+create_service() {
+    log "Création du service systemd..."
+
+    sudo tee /etc/systemd/system/dispatchmon.service > /dev/null <<EOF
+[Unit]
+Description=DispatchMon Dashboard
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=$INSTALL_DIR
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+ExecReload=/usr/bin/docker compose up -d --build
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable dispatchmon.service
+    log "Service dispatchmon créé et activé ✓"
+    log "Démarrage du service..."
+    sudo systemctl start dispatchmon.service
+}
+
 # Vérifier la config Telegram
 check_telegram() {
     if [ -f ".env" ] && grep -q "TELEGRAM_BOT_TOKEN" .env; then
@@ -117,13 +147,13 @@ print_summary() {
     echo -e "  🔧 API :        ${BLUE}http://$(hostname -I | awk '{print $1}'):8000${NC}"
     echo ""
     echo -e "  📁 Fichiers :   ${BLUE}$INSTALL_DIR${NC}"
-    echo -e "  📝 Logs :       ${YELLOW}docker compose -f $INSTALL_DIR/docker-compose.yml logs -f${NC}"
+    echo -e "  🔧 Service :    ${YELLOW}sudo systemctl {start|stop|restart|status} dispatchmon${NC}"
     echo ""
     echo -e "  Commandes utiles :"
-    echo -e "    ${YELLOW}cd $INSTALL_DIR && docker compose logs -f${NC}     Voir les logs"
-    echo -e "    ${YELLOW}cd $INSTALL_DIR && docker compose restart${NC}     Redémarrer"
-    echo -e "    ${YELLOW}cd $INSTALL_DIR && docker compose down${NC}        Arrêter"
-    echo -e "    ${YELLOW}cd $INSTALL_DIR && git pull && docker compose up -d --build${NC}  Mettre à jour"
+    echo -e "    ${YELLOW}sudo systemctl status dispatchmon${NC}              Statut"
+    echo -e "    ${YELLOW}sudo systemctl restart dispatchmon${NC}             Redémarrer"
+    echo -e "    ${YELLOW}sudo journalctl -u dispatchmon -f${NC}             Voir les logs"
+    echo -e "    ${YELLOW}cd $INSTALL_DIR && git pull && sudo systemctl restart dispatchmon${NC}  Mettre à jour"
     echo ""
 }
 
@@ -132,5 +162,6 @@ print_logo
 check_prereqs
 install_or_update
 docker_build
+create_service
 check_telegram
 print_summary

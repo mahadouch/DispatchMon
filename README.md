@@ -114,12 +114,22 @@ Le script automatise :
 - Build des images Docker
 - Démarrage des conteneurs
 - Exécution des migrations
+- Création du service systemd (démarrage auto au boot)
 - Configuration Telegram (via .env)
 
 ### Mise à jour
 
 ```bash
-cd ~/DispatchMon && git pull && docker compose up -d --build
+cd ~/DispatchMon && git pull && sudo systemctl restart dispatchmon
+```
+
+### Commandes du service
+
+```bash
+sudo systemctl status dispatchmon      # Statut
+sudo systemctl restart dispatchmon     # Redémarrer
+sudo systemctl stop dispatchmon        # Arrêter
+sudo journalctl -u dispatchmon -f      # Logs
 ```
 
 ### Installation manuelle
