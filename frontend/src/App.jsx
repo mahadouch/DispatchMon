@@ -70,6 +70,9 @@ export default function App() {
     const [version, setVersion] = useState(null)
     const [updateInfo, setUpdateInfo] = useState(null)
     const [showUpdateNotif, setShowUpdateNotif] = useState(false)
+    const [showUpdateModal, setShowUpdateModal] = useState(false)
+    const [updateLogs, setUpdateLogs] = useState([])
+    const [updateRunning, setUpdateRunning] = useState(false)
 
     const fetchData = useCallback(async () => {
         try {
@@ -833,19 +836,20 @@ export default function App() {
                                             </a>
                                             <button
                                                 onClick={async () => {
-                                                    if (!confirm('Mettre à jour DispatchMon ? Le service sera redémarré.')) return
+                                                    setShowUpdateModal(true)
+                                                    setUpdateLogs([{ step: 'Démarrage...', status: 'running', output: '' }])
+                                                    setUpdateRunning(true)
                                                     try {
-                                                        setTelegramTest({ ok: true, msg: '🔄 Mise à jour en cours...' })
                                                         const res = await fetch(`${API}/update`, { method: 'POST' })
                                                         const data = await res.json()
+                                                        setUpdateLogs(data.logs || [])
+                                                        setUpdateRunning(false)
                                                         if (data.status === 'ok') {
-                                                            setTelegramTest({ ok: true, msg: `✅ ${data.message}` })
-                                                            setTimeout(() => window.location.reload(), 3000)
-                                                        } else {
-                                                            setTelegramTest({ ok: false, msg: `❌ ${data.message}` })
+                                                            setTimeout(() => window.location.reload(), 5000)
                                                         }
                                                     } catch (e) {
-                                                        setTelegramTest({ ok: false, msg: '❌ Erreur de mise à jour' })
+                                                        setUpdateLogs(prev => [...prev, { step: 'Erreur', status: 'error', output: e.message }])
+                                                        setUpdateRunning(false)
                                                     }
                                                 }}
                                                 style={{
@@ -872,6 +876,104 @@ export default function App() {
                         </div>
                     )}
                 </div>
+
+            {/* Update Modal */}
+            {showUpdateModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.7)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', zIndex: 9999
+                }}>
+                    <div style={{
+                        background: 'var(--bg1)', border: '1px solid var(--border)',
+                        borderRadius: 12, padding: 24, width: 600, maxHeight: '80vh',
+                        display: 'flex', flexDirection: 'column'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                            <h3 style={{ margin: 0, fontSize: 16, color: 'var(--t1)' }}>
+                                {updateRunning ? '🔄 Mise à jour en cours...' : '✅ Mise à jour terminée'}
+                            </h3>
+                            {!updateRunning && (
+                                <button
+                                    onClick={() => setShowUpdateModal(false)}
+                                    style={{
+                                        background: 'transparent', border: 'none',
+                                        color: 'var(--t3)', cursor: 'pointer', fontSize: 20
+                                    }}
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Logs */}
+                        <div style={{
+                            flex: 1, overflow: 'auto', maxHeight: 400,
+                            background: '#0d1117', borderRadius: 8, padding: 16,
+                            fontFamily: 'monospace', fontSize: 12, lineHeight: 1.6
+                        }}>
+                            {updateLogs.map((log, i) => (
+                                <div key={i} style={{ marginBottom: 8 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                                        <span style={{ color: 'var(--t3)' }}>{'>>'}</span>
+                                        <span style={{
+                                            color: log.status === 'ok' ? 'var(--green)'
+                                                 : log.status === 'error' ? 'var(--red)'
+                                                 : log.status === 'skip' ? 'var(--t3)'
+                                                 : '#58a6ff',
+                                            fontWeight: 600
+                                        }}>
+                                            {log.status === 'ok' ? '✅' : log.status === 'error' ? '❌' : log.status === 'skip' ? '⏭️' : '⏳'}
+                                            {' '}{log.step}
+                                        </span>
+                                    </div>
+                                    {log.output && (
+                                        <pre style={{
+                                            margin: 0, padding: '4px 0 4px 24px',
+                                            color: 'var(--t2)', whiteSpace: 'pre-wrap', wordBreak: 'break-all'
+                                        }}>
+                                            {log.output}
+                                        </pre>
+                                    )}
+                                </div>
+                            ))}
+                            {updateRunning && (
+                                <div style={{ color: '#58a6ff' }}>
+                                    <span className="spinner" style={{ display: 'inline-block', marginRight: 8 }} />
+                                    En cours...
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                            {!updateRunning && (
+                                <>
+                                    <button
+                                        onClick={() => setShowUpdateModal(false)}
+                                        style={{
+                                            background: 'var(--bg2)', border: '1px solid var(--border)',
+                                            color: 'var(--t2)', padding: '8px 16px', borderRadius: 6,
+                                            cursor: 'pointer', fontSize: 13
+                                        }}
+                                    >
+                                        Fermer
+                                    </button>
+                                    <button
+                                        onClick={() => window.location.reload()}
+                                        style={{
+                                            background: 'var(--blue)', color: '#fff', border: 'none',
+                                            padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13
+                                        }}
+                                    >
+                                        🔄 Recharger
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     )
 }
