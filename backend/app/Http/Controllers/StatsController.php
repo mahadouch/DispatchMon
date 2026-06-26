@@ -58,13 +58,13 @@ class StatsController extends Controller
      */
     public function events(): JsonResponse
     {
-        $events = DispatcharrEvent::leftJoin('known_clients', 'dispatcharr_events.client_ip', '=', 'known_clients.client_ip')
+        $events = DispatcharrEvent::leftJoin('known_clients', 'dispatchmoon_events.client_ip', '=', 'known_clients.client_ip')
             ->select(
-                'dispatcharr_events.*',
+                'dispatchmoon_events.*',
                 'known_clients.country',
                 'known_clients.country_code',
             )
-            ->orderByDesc('dispatcharr_events.created_at')
+            ->orderByDesc('dispatchmoon_events.created_at')
             ->limit(200)
             ->get();
 

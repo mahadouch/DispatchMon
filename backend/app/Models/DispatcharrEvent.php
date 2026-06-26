@@ -14,12 +14,12 @@ class DispatcharrEvent extends Model
         'reason', 'source_name', 'programs', 'channels_count',
         'account_name', 'streams_created', 'streams_updated',
         'streams_deleted', 'content_name', 'content_uuid',
-        'raw_payload', 'dispatcharr_timestamp',
+        'raw_payload', 'dispatchmoon_timestamp',
     ];
 
     protected $casts = [
         'raw_payload' => 'array',
-        'dispatcharr_timestamp' => 'datetime',
+        'dispatchmoon_timestamp' => 'datetime',
         'total_bytes' => 'integer',
         'bytes_sent' => 'integer',
     ];

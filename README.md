@@ -12,7 +12,7 @@ Dashboard web temps réel pour **Dispatcharr** — monitorer les chaînes, clien
 - [Fonctionnalités](#-fonctionnalités)
 - [Screenshots](#-screenshots)
 - [Installation](#-installation)
-- [Configuration Dispatcharr](#-configuration-dispatcharr)
+- [Configuration Dispatcharr](#-configuration-dispatchmoon)
 - [Notifications Telegram](#-notifications-telegram)
 - [Sauvegardes](#-sauvegardes)
 - [API Reference](#-api-reference)
@@ -110,7 +110,7 @@ Dans votre serveur Dispatcharr, configurez l'intégration webhook :
 
 1. Allez dans **Settings** → **Integrations** → **Connect**
 2. Créez une nouvelle intégration **Webhook**
-3. Entrez l'URL : `http://<VOTRE_IP>:8000/api/webhook/dispatcharr`
+3. Entrez l'URL : `http://<VOTRE_IP>:8000/api/webhook/dispatchmoon`
 4. Ajoutez les subscriptions pour chaque événement :
    - `channel_start` / `channel_stop`
    - `client_connect` / `client_disconnect`
@@ -412,7 +412,7 @@ curl -X DELETE http://localhost:8000/api/backups/backup_2026-01-01_12-00-00
 ### Webhook
 
 ```
-POST /api/webhook/dispatcharr
+POST /api/webhook/dispatchmoon
 ```
 
 Reçoit les événements de Dispatcharr (pas d'authentification).
