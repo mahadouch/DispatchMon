@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\VersionController;
+use App\Http\Controllers\UpdateController;
 
 // Webhook endpoint (no auth needed - Dispatcharr calls this)
 Route::post('/webhook/dispatcharr', [WebhookController::class, 'handle']);
@@ -52,3 +53,6 @@ Route::prefix('backups')->group(function () {
 // Version API
 Route::get('/version', [VersionController::class, 'index']);
 Route::get('/version/check', [VersionController::class, 'check']);
+
+// Update API
+Route::post('/update', [UpdateController::class, 'update']);

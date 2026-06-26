@@ -831,6 +831,35 @@ export default function App() {
                                             >
                                                 🐙 GitHub
                                             </a>
+                                            <button
+                                                onClick={async () => {
+                                                    if (!confirm('Mettre à jour DispatchMon ? Le service sera redémarré.')) return
+                                                    try {
+                                                        setTelegramTest({ ok: true, msg: '🔄 Mise à jour en cours...' })
+                                                        const res = await fetch(`${API}/update`, { method: 'POST' })
+                                                        const data = await res.json()
+                                                        if (data.status === 'ok') {
+                                                            setTelegramTest({ ok: true, msg: `✅ ${data.message}` })
+                                                            setTimeout(() => window.location.reload(), 3000)
+                                                        } else {
+                                                            setTelegramTest({ ok: false, msg: `❌ ${data.message}` })
+                                                        }
+                                                    } catch (e) {
+                                                        setTelegramTest({ ok: false, msg: '❌ Erreur de mise à jour' })
+                                                    }
+                                                }}
+                                                style={{
+                                                    background: updateInfo?.update_available
+                                                        ? 'linear-gradient(135deg, rgba(59,130,246,0.3), rgba(147,51,234,0.3))'
+                                                        : 'var(--bg2)',
+                                                    border: '1px solid var(--border)',
+                                                    padding: '8px 16px', borderRadius: 6, fontSize: 13,
+                                                    color: updateInfo?.update_available ? 'var(--blue)' : 'var(--t2)',
+                                                    cursor: 'pointer', fontWeight: updateInfo?.update_available ? 600 : 400
+                                                }}
+                                            >
+                                                {updateInfo?.update_available ? `🚀 Mettre à jour (v${updateInfo.latest})` : '🔄 Vérifier les mises à jour'}
+                                            </button>
                                         </div>
 
                                         {/* Credits */}
