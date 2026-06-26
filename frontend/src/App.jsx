@@ -182,6 +182,9 @@ export default function App() {
                     else localStorage.removeItem('token')
                 })
                 .catch(() => localStorage.removeItem('token'))
+                .finally(() => setLoading(false))
+        } else {
+            setLoading(false)
         }
     }, [])
 
