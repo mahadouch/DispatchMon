@@ -117,4 +117,19 @@ class AuthController extends Controller
 
         return response()->json(['status' => 'ok', 'message' => 'Mot de passe modifié']);
     }
+
+    /**
+     * PUT /api/auth/email
+     */
+    public function changeEmail(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users,email',
+        ]);
+
+        $user = $request->user();
+        $user->update(['email' => $request->email]);
+
+        return response()->json(['status' => 'ok', 'message' => 'Email modifié']);
+    }
 }

@@ -80,6 +80,7 @@ Route::middleware(\App\Http\Middleware\AuthToken::class)->group(function () {
     Route::get('/auth/me', [\App\Http\Controllers\AuthController::class, 'me']);
     Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     Route::put('/auth/password', [\App\Http\Controllers\AuthController::class, 'changePassword']);
+    Route::put('/auth/email', [\App\Http\Controllers\AuthController::class, 'changeEmail']);
 });
 
 // Protected routes (API Key required)
