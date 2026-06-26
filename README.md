@@ -758,6 +758,28 @@ npm run dev
 
 ---
 
+## 📸 Screenshots
+
+### Dashboard — Clients
+![Clients](screenshots/01-clients.png)
+
+### Dashboard — Actifs
+![Actifs](screenshots/02-actifs.png)
+
+### Dashboard — Chaînes
+![Chaînes](screenshots/03-chaines.png)
+
+### Dashboard — Événements
+![Événements](screenshots/04-evenements.png)
+
+### Paramètres — Telegram
+![Telegram](screenshots/05-parametres-telegram.png)
+
+### Paramètres — Sauvegardes
+![Sauvegardes](screenshots/06-parametres-backups.png)
+
+---
+
 ## 📝 License
 
 MIT
