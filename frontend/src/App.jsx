@@ -102,11 +102,6 @@ export default function App() {
         return () => clearInterval(timer)
     }, [fetchData])
 
-    const togglePaid = async (id, isPaid) => {
-        const endpoint = isPaid ? `${API}/clients/${id}/unpay` : `${API}/clients/${id}/pay`
-        await fetch(endpoint, { method: 'PUT' })
-        fetchData()
-    }
 
     const filteredClients = knownClients.filter(c =>
         !search ||
@@ -210,12 +205,12 @@ export default function App() {
                                             <th>Sessions</th>
                                             <th>Première vue</th>
                                             <th>Dernière vue</th>
-                                            <th>Action</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredClients.length === 0 ? (
-                                            <tr><td colSpan={7}><div className="empty">Aucun client enregistré</div></td></tr>
+                                            <tr><td colSpan={6}><div className="empty">Aucun client enregistré</div></td></tr>
                                         ) : filteredClients.map(c => (
                                             <tr key={c.id} style={{
                                             }}>
@@ -234,19 +229,7 @@ export default function App() {
                                                 </td>
                                                 <td style={{ fontSize: 12, color: 'var(--t3)' }}>{timeAgo(c.first_seen)}</td>
                                                 <td style={{ fontSize: 12, color: 'var(--t3)' }}>{timeAgo(c.last_seen)}</td>
-                                                <td>
-                                                    <button
-                                                        onClick={() => togglePaid(c.id, c.is_paid)}
-                                                        style={{
-                                                            background: c.is_paid ? 'rgba(248,81,73,0.15)' : 'rgba(63,185,80,0.15)',
-                                                            color: c.is_paid ? 'var(--red)' : 'var(--green)',
-                                                            border: 'none', padding: '4px 12px', borderRadius: 6,
-                                                            cursor: 'pointer', fontSize: 12, fontWeight: 600
-                                                        }}
-                                                    >
-                                                        {c.is_paid ? 'Retirer' : 'Marquer payé'}
-                                                    </button>
-                                                </td>
+
                                             </tr>
                                         ))}
                                     </tbody>
