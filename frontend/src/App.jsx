@@ -396,61 +396,42 @@ export default function App() {
                     </div>
                 )}
 
-                {systemInfo && (
+                {summary && (
                     <div className="sec" style={{ marginBottom: 24 }}>
-                        <div className="sec-hdr"><h2>🖥️ Système</h2></div>
-                        <div style={{ padding: 16, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+                        <div className="sec-hdr">
+                            <h2>📡 Statut Dispatcharr</h2>
+                            <span className={summary.active_channels > 0 ? 'badge on' : 'badge off'}>
+                                <div className="dot" />
+                                <span>{summary.active_channels > 0 ? 'En ligne' : 'Hors ligne'}</span>
+                            </span>
+                        </div>
+                        <div style={{ padding: 16, display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
                             <div className="card">
-                                <div className="lbl">CPU</div>
-                                <div className="val" style={{ fontSize: 20, color: systemInfo.cpu?.usage_percent > 80 ? 'var(--red)' : 'var(--blue)' }}>
-                                    {systemInfo.cpu?.usage_percent}%
-                                </div>
-                                <div className="sub">{systemInfo.cpu?.cores} cores / {systemInfo.cpu?.threads} threads</div>
-                                <div style={{ height: 4, background: 'var(--bg2)', borderRadius: 2, marginTop: 6 }}>
-                                    <div style={{
-                                        height: '100%', borderRadius: 2,
-                                        width: `${systemInfo.cpu?.usage_percent}%`,
-                                        background: systemInfo.cpu?.usage_percent > 80 ? 'var(--red)' : 'var(--blue)'
-                                    }} />
-                                </div>
-                                <div style={{ fontSize: 10, color: 'var(--t3)', marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {systemInfo.cpu?.model}
-                                </div>
+                                <div className="lbl">Chaînes actives</div>
+                                <div className="val" style={{ fontSize: 20, color: 'var(--green)' }}>{summary.active_channels}</div>
+                                <div className="sub">{summary.total_channels} configurées</div>
                             </div>
                             <div className="card">
-                                <div className="lbl">Disque</div>
-                                <div className="val" style={{ fontSize: 20, color: systemInfo.disk?.percent > 80 ? 'var(--red)' : 'var(--green)' }}>
-                                    {systemInfo.disk?.percent}%
-                                </div>
-                                <div className="sub">{systemInfo.disk?.used_human} / {systemInfo.disk?.total_human}</div>
-                                <div style={{ height: 4, background: 'var(--bg2)', borderRadius: 2, marginTop: 6 }}>
-                                    <div style={{
-                                        height: '100%', borderRadius: 2,
-                                        width: `${systemInfo.disk?.percent}%`,
-                                        background: systemInfo.disk?.percent > 80 ? 'var(--red)' : 'var(--blue)'
-                                    }} />
-                                </div>
+                                <div className="lbl">Viewers</div>
+                                <div className="val" style={{ fontSize: 20, color: 'var(--blue)' }}>{summary.total_viewers}</div>
+                                <div className="sub">connectés</div>
                             </div>
                             <div className="card">
-                                <div className="lbl">Mémoire</div>
-                                <div className="val" style={{ fontSize: 20, color: systemInfo.memory?.percent > 80 ? 'var(--red)' : 'var(--purple)' }}>
-                                    {systemInfo.memory?.percent}%
-                                </div>
-                                <div className="sub">{systemInfo.memory?.used_human} / {systemInfo.memory?.total_human}</div>
-                                <div style={{ height: 4, background: 'var(--bg2)', borderRadius: 2, marginTop: 6 }}>
-                                    <div style={{
-                                        height: '100%', borderRadius: 2,
-                                        width: `${systemInfo.memory?.percent}%`,
-                                        background: systemInfo.memory?.percent > 80 ? 'var(--red)' : 'var(--purple)'
-                                    }} />
-                                </div>
+                                <div className="lbl">Clients connus</div>
+                                <div className="val" style={{ fontSize: 20, color: 'var(--purple)' }}>{knownClients.length}</div>
+                                <div className="sub">{activeClients.length} actifs</div>
                             </div>
                             <div className="card">
-                                <div className="lbl">Versions</div>
-                                <div style={{ fontSize: 13, marginTop: 4 }}>
-                                    <div>PHP <strong>{systemInfo.php}</strong></div>
-                                    <div>Laravel <strong>{systemInfo.laravel}</strong></div>
+                                <div className="lbl">Événements 24h</div>
+                                <div className="val" style={{ fontSize: 20, color: 'var(--orange)' }}>{summary.events_24h}</div>
+                                <div className="sub">{summary.total_events} total</div>
+                            </div>
+                            <div className="card">
+                                <div className="lbl">Dernier event</div>
+                                <div className="val" style={{ fontSize: 14, color: 'var(--t2)' }}>
+                                    {events.length > 0 ? timeAgo(events[0].created_at) : '—'}
                                 </div>
+                                <div className="sub">{events.length > 0 ? events[0].event_type : 'aucun'}</div>
                             </div>
                         </div>
                     </div>
